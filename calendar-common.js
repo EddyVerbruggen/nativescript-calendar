@@ -8,6 +8,7 @@ Calendar.RecurrenceFrequency = {
 }
 
 Calendar.defaults = {
+  id: null, // for searching
   title: null,
   location: null,
   notes: null,
