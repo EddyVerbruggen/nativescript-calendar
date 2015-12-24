@@ -5,16 +5,14 @@ Calendar.RecurrenceFrequency = {
   WEEKLY: 'weekly',
   MONTHLY: 'monthly',
   YEARLY: 'yearly'
-}
+};
 
 Calendar.defaults = {
-  id: null, // for searching
-  title: null,
-  location: null,
-  notes: null,
-  startDate: null,
-  endDate: null,
-  url: null,
+//   id: null, // for searching
+//   title: null,
+//   location: null,
+//   notes: null,
+//   url: null,
   reminders: {
     first: 60, // 60 minutes before the event
     second: null // no second reminder
