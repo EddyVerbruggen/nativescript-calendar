@@ -41,7 +41,7 @@ Calendar._findEvents = function(arg) {
     } while (cursor.moveToNext());
   }
   return events;
-}
+};
 
 Calendar.findEvents = function(arg) {
   return new Promise(function (resolve, reject) {

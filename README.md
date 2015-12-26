@@ -1,4 +1,4 @@
-# NativeScript Calenar Plugin
+# NativeScript Calendar Plugin
 
 Interact with the native calendar. Add, Update, Read, you name it.
 
