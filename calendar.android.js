@@ -5,54 +5,57 @@ var Calendar = require("./calendar-common");
 
 (function () {
   var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
-  var activity = appModule.android.foregroundActivity;
+  var activity = application.android.foregroundActivity;
   if (!hasPermission) {
-      // no need to distinguish between read and write atm
-      var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
+    // no need to distinguish between read and write atm
+    var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+        android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
 
-      var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
+    var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+        android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
 
-      hasPermission = hasReadPermission && hasWritePermission;
+    hasPermission = hasReadPermission && hasWritePermission;
   }
   if (!hasPermission) {
-      android.support.v4.app.ActivityCompat.requestPermissions(
-          activity,
-          [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
-           556);
+    android.support.v4.app.ActivityCompat.requestPermissions(
+        activity,
+        [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
+        556);
   }
 })();
 
 Calendar._findEvents = function(arg) {
-  var projection = [Calendars._ID]; // TODO add others
-  var sortOrder = Instances.BEGIN + " ASC, " + Instances.END + " ASC";
+  var projection = [android.provider.CalendarContract.Calendars._ID]; // TODO add others
+  var sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
   console.log("---- sort order: " + sortOrder);
   var selection = "";
   var selections = [];
 
   if (arg.title != null) {
-    selection += Events.TITLE + " LIKE ?";
+    selection += android.provider.CalendarContract.Events.TITLE + " LIKE ?";
     selections.push("%" + arg.title + "%");
   }
   if (arg.location != null) {
     if (!"".equals(selection)) {
       selection += " AND ";
     }
-    selection += Events.EVENT_LOCATION + " LIKE ?";
+    selection += android.provider.CalendarContract.Events.EVENT_LOCATION + " LIKE ?";
     selections.push("%" + arg.location + "%");
   }
-  var cursor = queryEventInstances(
-    arg.startDate.getTime(),
-    arg.endDate.getTime(),
-    projection,
-    selection,
-    selections,
-    sortOrder);
-  
+
+  var uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
+  android.content.ContentUris.appendId(uriBuilder, arg.startDate.getTime());
+  android.content.ContentUris.appendId(uriBuilder, arg.endDate.getTime());
+  var cursor = application.android.foregroundActivity.getContentResolver().query(
+      uriBuilder.build(),
+      projection,
+      selection,
+      selections,
+      sortOrder);
+
   var events = [];
   if (cursor.moveToFirst()) {
-    var colId = cursor.getColumnIndex(Calendars._ID);
+    var colId = cursor.getColumnIndex(android.provider.CalendarContract.Calendars._ID);
     console.log("--- colId " + colId);
     do {
       var event = new Event();
