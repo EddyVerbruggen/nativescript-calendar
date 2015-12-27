@@ -3,6 +3,27 @@ var application = require("application");
 var frame = require("ui/frame");
 var Calendar = require("./calendar-common");
 
+(function () {
+  var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
+  var activity = appModule.android.foregroundActivity;
+  if (!hasPermission) {
+      // no need to distinguish between read and write atm
+      var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
+
+      var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
+
+      hasPermission = hasReadPermission && hasWritePermission;
+  }
+  if (!hasPermission) {
+      android.support.v4.app.ActivityCompat.requestPermissions(
+          activity,
+          [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
+           556);
+  }
+})();
+
 Calendar._findEvents = function(arg) {
   var projection = [Calendars._ID]; // TODO add others
   var sortOrder = Instances.BEGIN + " ASC, " + Instances.END + " ASC";
