@@ -20,9 +20,10 @@ Calendar.defaults = {
   recurrence: {
     frequency: null,
     interval: null, // if frequency is DAILY, then 1 = every day, 2 = every other day 
-    endDate: null,
+    endDate: null
   },
   calendar: {
+    id: 1,
     name: null,
     color: null
   }

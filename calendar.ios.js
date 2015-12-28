@@ -28,7 +28,7 @@ Calendar._getRecurrenceFrequency = function (frequency) {
 
 Calendar._hasPermission = function () {
   var eventStore = EKEventStore.alloc().init();
-  var authStatus = eventStore.authorizationStatusForEntityType(EKEntityTypeEvent)
+  var authStatus = eventStore.authorizationStatusForEntityType(EKEntityTypeEvent);
   console.log("--- authStatus: " + authStatus);
 };
 
@@ -40,16 +40,17 @@ Calendar._requestPermission = function () {
   });
 };
 
-Calendar._findCalendar = function (name) {
+Calendar._findCalendars = function (filterByName) {
   var calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
+  var result = [];
   for (var i = 0, j = calendars.count; i < j; i++) {
     var calendar = calendars.objectAtIndex(i);
-    console.log("----- calendar: " + calendar);
-    if (calendar.title == name) {
-      return calendar;
+    if (!filterByName || filterByName == calendar.title) {
+        console.log("----- calendar: " + calendar);
+        result.push(calendar);
     }
   }
-  return null;
+  return result;
 };
 
 Calendar._findEKEvents = function (arg, calendars) {
@@ -100,6 +101,17 @@ Calendar._findEKSource = function () {
   return null;
 };
 
+Calendar.listCalendars = function (arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      return Calendar._listCalendars();
+    } catch (ex) {
+      console.log("Error in Calendar.listCalendars: " + ex);
+      reject(ex);
+    }
+  });
+};
+
 Calendar.findEvents = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
@@ -114,7 +126,11 @@ Calendar.findEvents = function (arg) {
           return;
         }
       } else {
-        var calendar = Calendar._findCalendar(settings.calendar.name);
+        var cals = Calendar._findCalendars(settings.calendar.name);
+        var calendar;
+        if (cals.length > 0) {
+            calendar = cals[0];
+        }
         if (calendar == null) {
           reject("Could not find calendar");
           return;
@@ -216,7 +232,10 @@ Calendar.createEvent = function (arg) {
           return;
         }
       } else {
-        calendar = Calendar._findCalendar(settings.calendar.name);
+        var cals = Calendar._findCalendars(settings.calendar.name);
+        if (cals.length > 0) {
+            calendar = cals[0];
+        }
         if (calendar == null) {
           // create it
           calendar = EKCalendar.calendarForEntityTypeEventStore("EKEntityTypeEvent", Calendar._eventStore);

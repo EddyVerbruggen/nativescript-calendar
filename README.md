@@ -5,8 +5,7 @@ Interact with the native calendar. Add, Update, Read, you name it.
 
 
 ## DO NOT USE YET
-This baby is heavily work in progress :)
-
+Most is working, but still work in progress. Testing this baby currently..
 
 
 

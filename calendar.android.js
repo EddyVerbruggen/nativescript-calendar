@@ -1,53 +1,122 @@
-var utils = require("utils/utils");
 var application = require("application");
-var frame = require("ui/frame");
 var Calendar = require("./calendar-common");
 
+Calendar._fields = {
+    EVENT_ID: android.provider.CalendarContract.Instances.EVENT_ID,
+    CALENDAR: {
+        ID: "calendar_id",
+        NAME: "calendar_displayName"
+    },
+    TITLE: "title",
+    MESSAGE: "description",
+    LOCATION: "eventLocation",
+    STARTDATE: "dtstart",
+    ENDDATE: "dtend",
+    ALLDAY: "allDay",
+    TIMEZONE: "eventTimezone",
+    HAS_ALARM: "hasAlarm",
+    RRULE: "rrule"
+};
+
 (function () {
-  var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
-  var activity = application.android.foregroundActivity;
-  if (!hasPermission) {
-    // no need to distinguish between read and write atm
-    var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-        android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
+    setTimeout(function() {
+        var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
+        var activity = application.android.foregroundActivity;
+        if (activity === undefined) {
+            return;
+        }
+        if (!hasPermission) {
+            // no need to distinguish between read and write atm
+            var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+                android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
 
-    var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-        android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
+            var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+                android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
 
-    hasPermission = hasReadPermission && hasWritePermission;
-  }
-  if (!hasPermission) {
-    android.support.v4.app.ActivityCompat.requestPermissions(
-        activity,
-        [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
-        556);
-  }
+            hasPermission = hasReadPermission && hasWritePermission;
+        }
+        if (!hasPermission) {
+            android.support.v4.app.ActivityCompat.requestPermissions(
+                activity,
+                [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
+                556);
+        }
+    }, 1000);
 })();
 
+Calendar._findCalendars = function (filterByName) {
+  var projection = [
+      "_id",
+      "name"
+  ];
+  
+  var sortOrder = null;
+  var selections = null;
+  var selection = "visible=1";
+
+  var contentResolver = application.android.foregroundActivity.getContentResolver();
+  var uriBuilder = android.provider.CalendarContract.Calendars.CONTENT_URI.buildUpon();
+  var uri = uriBuilder.build();
+  var cursor = contentResolver.query(
+      uri,
+      projection,
+      selection,
+      selections,
+      sortOrder);
+
+  var calendars = [];
+  if (cursor.moveToFirst()) {
+    do {
+      var name = cursor.getString(1);
+      if (!filterByName || name == filterByName) {  
+        var calendar = {
+            id: cursor.getLong(0),
+            name: name
+        };
+        calendars.push(calendar);
+      }
+    } while (cursor.moveToNext());
+  }
+  return calendars;
+};
+
 Calendar._findEvents = function(arg) {
-  var projection = [android.provider.CalendarContract.Calendars._ID]; // TODO add others
+  var settings = Calendar.merge(arg, Calendar.defaults);
+
+  var projection = [
+      Calendar._fields.EVENT_ID,      
+      Calendar._fields.CALENDAR.ID,
+      Calendar._fields.CALENDAR.NAME,
+      Calendar._fields.TITLE,
+      Calendar._fields.MESSAGE,
+      Calendar._fields.STARTDATE,
+      Calendar._fields.ENDDATE,
+      Calendar._fields.ALLDAY
+  ];
+  
   var sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
-  console.log("---- sort order: " + sortOrder);
   var selection = "";
   var selections = [];
 
-  if (arg.title != null) {
-    selection += android.provider.CalendarContract.Events.TITLE + " LIKE ?";
-    selections.push("%" + arg.title + "%");
+  if (settings.title != null) {
+    selection += Calendar._fields.TITLE + " LIKE ?";
+    selections.push("%" + settings.title + "%");
   }
-  if (arg.location != null) {
+  if (settings.location != null) {
     if (!"".equals(selection)) {
       selection += " AND ";
     }
-    selection += android.provider.CalendarContract.Events.EVENT_LOCATION + " LIKE ?";
-    selections.push("%" + arg.location + "%");
+    selection += Calendar._fields.LOCATION + " LIKE ?";
+    selections.push("%" + settings.location + "%");
   }
 
   var uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
-  android.content.ContentUris.appendId(uriBuilder, arg.startDate.getTime());
-  android.content.ContentUris.appendId(uriBuilder, arg.endDate.getTime());
-  var cursor = application.android.foregroundActivity.getContentResolver().query(
-      uriBuilder.build(),
+  android.content.ContentUris.appendId(uriBuilder, settings.startDate.getTime());
+  android.content.ContentUris.appendId(uriBuilder, settings.endDate.getTime());
+  var contentResolver = application.android.foregroundActivity.getContentResolver();
+  var uri = uriBuilder.build();
+  var cursor = contentResolver.query(
+      uri,
       projection,
       selection,
       selections,
@@ -55,16 +124,35 @@ Calendar._findEvents = function(arg) {
 
   var events = [];
   if (cursor.moveToFirst()) {
-    var colId = cursor.getColumnIndex(android.provider.CalendarContract.Calendars._ID);
-    console.log("--- colId " + colId);
     do {
-      var event = new Event();
-      event.id = cursor.getString(colId);
+      var event = {
+          id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
+          title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
+          message: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
+          startDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.STARTDATE))),
+          endDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
+          allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) == 1,
+          calendar: {
+              id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
+              name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
+          }
+      };
+      console.log(JSON.stringify(event));
       events.push(event);
-      console.log("--- found event with id " + event.id);
     } while (cursor.moveToNext());
   }
   return events;
+};
+
+Calendar.listCalendars = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      resolve(Calendar._findCalendars());
+    } catch (ex) {
+      console.log("Error in Calendar.findEvents: " + ex);
+      reject(ex);
+    }
+  });
 };
 
 Calendar.findEvents = function(arg) {
@@ -79,42 +167,139 @@ Calendar.findEvents = function(arg) {
   });
 };
 
+Calendar.deleteEvents = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      var events = Calendar._findEvents(arg);
+      var ContentResolver = application.android.foregroundActivity.getContentResolver();
+      var deletedEventIds = [];
+      for (var e in events) {
+          var event = events[e];
+          var uri = android.provider.CalendarContract.Events.CONTENT_URI;
+          var eventUri = android.content.ContentUris.withAppendedId(uri, event.id);
+          ContentResolver.delete(eventUri, null, null);
+          deletedEventIds.push(event.id);
+      }
+      resolve(deletedEventIds);
+    } catch (ex) {
+      console.log("Error in Calendar.deleteEvents: " + ex);
+      reject(ex);
+    }
+  });
+};
+
 Calendar.createEvent = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
       // TODO permission stuff, see Calendar.java#413
-      var contentValues = new ContentValues();
+      // TODO startdate and enddate are mandatory
+      var settings = Calendar.merge(arg, Calendar.defaults);
+
+      var ContentValues = new android.content.ContentValues();
+      var Events = android.provider.CalendarContract.Events;
       var allDayEvent = false; // TODO see AbsCalAcc.java#436
       if (allDayEvent) {
         // TODO
       } else {
-        contentValues.put(Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
-        contentValues.put(Events.DTSTART, arg.startDate);
-        contentValues.put(Events.DTEND, arg.endDate);
+        console.log("--- no allDayEvent, timezone: " + java.util.TimeZone.getDefault().getID());
+        ContentValues.put(Calendar._fields.TIMEZONE, java.util.TimeZone.getDefault().getID());
+        // TODO less weird code
+        ContentValues.put(Calendar._fields.STARTDATE, java.lang.Long.valueOf("" + settings.startDate.getTime()));
+        ContentValues.put(Calendar._fields.ENDDATE, java.lang.Long.valueOf("" + settings.endDate.getTime()));
       }
-      contentValues.put(Events.ALL_DAY, allDayEvent ? 1 : 0);
-      contentValues.put(Events.TITLE, arg.title);
-      contentValues.put(Events.EVENT_LOCATION, arg.location);
+      //ContentValues.put("allDay", allDayEvent);
+      ContentValues.put(Calendar._fields.TITLE, settings.title);
+      ContentValues.put(Calendar._fields.LOCATION, settings.location);
       // there's no separate url field, so adding it to the notes
-      var description = arg.notes;
-      if (arg.url != null) {
-        if (arg.notes == null) {
-          description = arg.url;
+      var description = settings.notes;
+      if (settings.url != null) {
+        if (settings.notes == null) {
+          description = settings.url;
         } else {
-          description += " " + arg.url;
+          description += " " + settings.url;
         }
       }
-      contentValues.put(Events.DESCRIPTION, description);
-      // TODO
-      // contentValues.put(Events.HAS_ALARM, (firstReminderMinutes == null && secondReminderMinutes == null) ? 0 : 1);
-      // contentValues.put(Events.CALENDAR_ID, calendarId);
-      // TODO recur
-      var activity = application.android.foregroundActivity;
-      var contentResolver = activity.getContentResolver();
-      var eventsUri = Uri.parse("content://com.android.calendar/events");
-      var uri = contentResolver.insert(eventsUri, contentValues);
+      ContentValues.put(Calendar._fields.MESSAGE, description);
+      console.log("--- ContentValues: " + ContentValues);
+      var ContentResolver = application.android.foregroundActivity.getContentResolver();
+      ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders.first || settings.reminders.second ? 1 : 0));
+      var calendarId = null;
+      if (settings.calendar.name != null) {
+          var calendars = Calendar._findCalendars(settings.calendar.name);
+          if (calendars.length > 0) {
+              calendarId = calendars[0].id;
+          } else {
+              // create it
+              var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
+              var calendarContentValues = new android.content.ContentValues();
+              // TODO constants
+              console.log("--- creating cal " + settings.calendar.name);
+              calendarContentValues.put("name", settings.calendar.name);
+              calendarContentValues.put("calendar_displayName", settings.calendar.name);
+              calendarContentValues.put("visible", new java.lang.Integer(1));
+              calendarContentValues.put("account_type", "LOCAL");
+              calendarContentValues.put("name", settings.calendar.name);
+              calendarContentValues.put("account_name", settings.calendar.name);
+              calendarContentValues.put("ownerAccount", settings.calendar.name);
+            //   calendarContentValues.put("calendar_color", android.graphics.Color.RED);
+              calendarContentValues.put("sync_events", new java.lang.Integer(1));
+              calUri = calUri.buildUpon()
+                .appendQueryParameter("caller_is_syncadapter", "true")
+                .appendQueryParameter("account_name", settings.calendar.name)
+                .appendQueryParameter("account_type", "LOCAL")
+                .build();
+              ContentResolver.insert(calUri, calendarContentValues);
+              // retrieve the calendar we just created
+              console.log("--- created cal via calUri " + calUri);
+              var cals = Calendar._findCalendars(settings.calendar.name);
+              if (cals.length > 0) {
+                  console.log("--- created cal " + cals[0]);
+                  calendarId = cals[0].id;
+              }
+          }
+      }
+      if (calendarId == null) {
+          calendarId = settings.calendar.id;
+      }
+      console.log("---- creating event in calendarId " + calendarId);
+      ContentValues.put(Calendar._fields.CALENDAR.ID, new java.lang.Integer(calendarId));
+
+      // recurrence
+      if (settings.recurrence.frequency != null) {
+          if (settings.recurrence.endDate == null) {
+              ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval);
+          } else {
+              var endDate = arg.recurrence.endDate;
+              var yyyy = endDate.getFullYear().toString();
+              var mm = (endDate.getMonth()+1).toString();
+              var dd  = endDate.getDate().toString();
+              var yyyymmdd = yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
+              console.log("---- recurrence, enddate formatted: " + yyyymmdd);
+              ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval + ";UNTIL=" + yyyymmdd);
+          }
+      }
+      
+      var eventsUri = android.net.Uri.parse("content://com.android.calendar/events");
+      var uri = ContentResolver.insert(eventsUri, ContentValues);
       var createdEventID = uri.getLastPathSegment();
       console.log("--- created event " + createdEventID);
+
+      // now add reminders, if any
+      if (settings.reminders.first) {
+          var firstReminderContentValues = new android.content.ContentValues();
+          firstReminderContentValues.put("event_id", createdEventID);
+          firstReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.first));
+          firstReminderContentValues.put("method", new java.lang.Integer(1));
+          ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), firstReminderContentValues);
+      }
+      if (settings.reminders.second) {
+          var secondReminderContentValues = new android.content.ContentValues();
+          secondReminderContentValues.put("event_id", createdEventID);
+          secondReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.second));
+          secondReminderContentValues.put("method", new java.lang.Integer(1));
+          ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), secondReminderContentValues);
+      }
+
       resolve(createdEventID);
     } catch (ex) {
       console.log("Error in Calendar.createEvent: " + ex);
