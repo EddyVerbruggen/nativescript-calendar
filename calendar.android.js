@@ -20,29 +20,60 @@ Calendar._fields = {
 
 (function () {
     setTimeout(function() {
-        var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
-        var activity = application.android.foregroundActivity;
-        if (activity === undefined) {
-            return;
-        }
-        if (!hasPermission) {
-            // no need to distinguish between read and write atm
-            var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-                android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
-
-            var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
-                android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
-
-            hasPermission = hasReadPermission && hasWritePermission;
-        }
-        if (!hasPermission) {
-            android.support.v4.app.ActivityCompat.requestPermissions(
-                activity,
-                [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
-                556);
+        if (!Calendar._hasPermission()) {
+            Calendar._requestPermission();
         }
     }, 1000);
 })();
+
+Calendar._hasPermission = function() {
+    var hasPermission = android.os.Build.VERSION.SDK_INT < 23; // Android M. (6.0)
+    var activity = application.android.foregroundActivity;
+    if (activity === undefined) {
+        return;
+    }
+    if (!hasPermission) {
+        // no need to distinguish between read and write atm
+        var hasReadPermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.READ_CALENDAR);
+
+        var hasWritePermission = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+            android.support.v4.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_CALENDAR);
+
+        hasPermission = hasReadPermission && hasWritePermission;
+    }
+    return hasPermission;
+};
+
+Calendar.hasPermission = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      resolve(Calendar._hasPermission());
+    } catch (ex) {
+      console.log("Error in Calendar.hasPermission: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+Calendar._requestPermission = function() {
+    android.support.v4.app.ActivityCompat.requestPermissions(
+        application.android.foregroundActivity,
+        [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
+        556);
+};
+
+Calendar.requestPermission = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      Calendar._requestPermission();
+      resolve();
+    } catch (ex) {
+      console.log("Error in Calendar.requestPermission: " + ex);
+      reject(ex);
+    }
+  });
+};
 
 Calendar._findCalendars = function (filterByName) {
   var projection = [
@@ -89,6 +120,7 @@ Calendar._findEvents = function(arg) {
       Calendar._fields.CALENDAR.NAME,
       Calendar._fields.TITLE,
       Calendar._fields.MESSAGE,
+      Calendar._fields.LOCATION,
       Calendar._fields.STARTDATE,
       Calendar._fields.ENDDATE,
       Calendar._fields.ALLDAY
@@ -128,7 +160,8 @@ Calendar._findEvents = function(arg) {
       var event = {
           id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
           title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
-          message: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
+          notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
+          location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
           startDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.STARTDATE))),
           endDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
           allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) == 1,
@@ -137,7 +170,6 @@ Calendar._findEvents = function(arg) {
               name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
           }
       };
-      console.log(JSON.stringify(event));
       events.push(event);
     } while (cursor.moveToNext());
   }
@@ -149,7 +181,7 @@ Calendar.listCalendars = function(arg) {
     try {
       resolve(Calendar._findCalendars());
     } catch (ex) {
-      console.log("Error in Calendar.findEvents: " + ex);
+      console.log("Error in Calendar.listCalendars: " + ex);
       reject(ex);
     }
   });
@@ -158,7 +190,10 @@ Calendar.listCalendars = function(arg) {
 Calendar.findEvents = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
-      // TODO permission stuff, see Calendar.java#381
+      if (!arg.startDate || !arg.endDate) {
+          reject("startDate and endDate are mandatory");
+          return;
+      }
       resolve(Calendar._findEvents(arg));
     } catch (ex) {
       console.log("Error in Calendar.findEvents: " + ex);
@@ -170,6 +205,10 @@ Calendar.findEvents = function(arg) {
 Calendar.deleteEvents = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
+      if (!arg.startDate || !arg.endDate) {
+          reject("startDate and endDate are mandatory");
+          return;
+      }
       var events = Calendar._findEvents(arg);
       var ContentResolver = application.android.foregroundActivity.getContentResolver();
       var deletedEventIds = [];
@@ -191,25 +230,21 @@ Calendar.deleteEvents = function(arg) {
 Calendar.createEvent = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
-      // TODO permission stuff, see Calendar.java#413
-      // TODO startdate and enddate are mandatory
       var settings = Calendar.merge(arg, Calendar.defaults);
+      if (!settings.startDate || !settings.endDate) {
+          reject("startDate and endDate are mandatory");
+          return;
+      }
 
       var ContentValues = new android.content.ContentValues();
       var Events = android.provider.CalendarContract.Events;
-      var allDayEvent = false; // TODO see AbsCalAcc.java#436
-      if (allDayEvent) {
-        // TODO
-      } else {
-        console.log("--- no allDayEvent, timezone: " + java.util.TimeZone.getDefault().getID());
-        ContentValues.put(Calendar._fields.TIMEZONE, java.util.TimeZone.getDefault().getID());
-        // TODO less weird code
-        ContentValues.put(Calendar._fields.STARTDATE, java.lang.Long.valueOf("" + settings.startDate.getTime()));
-        ContentValues.put(Calendar._fields.ENDDATE, java.lang.Long.valueOf("" + settings.endDate.getTime()));
-      }
-      //ContentValues.put("allDay", allDayEvent);
+      ContentValues.put(Calendar._fields.TIMEZONE, java.util.TimeZone.getDefault().getID());
+      ContentValues.put(Calendar._fields.STARTDATE, new java.lang.Long(settings.startDate.getTime()));
+      ContentValues.put(Calendar._fields.ENDDATE, new java.lang.Long(settings.endDate.getTime()));
+      
       ContentValues.put(Calendar._fields.TITLE, settings.title);
       ContentValues.put(Calendar._fields.LOCATION, settings.location);
+
       // there's no separate url field, so adding it to the notes
       var description = settings.notes;
       if (settings.url != null) {
@@ -220,7 +255,6 @@ Calendar.createEvent = function(arg) {
         }
       }
       ContentValues.put(Calendar._fields.MESSAGE, description);
-      console.log("--- ContentValues: " + ContentValues);
       var ContentResolver = application.android.foregroundActivity.getContentResolver();
       ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders.first || settings.reminders.second ? 1 : 0));
       var calendarId = null;
@@ -232,8 +266,6 @@ Calendar.createEvent = function(arg) {
               // create it
               var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
               var calendarContentValues = new android.content.ContentValues();
-              // TODO constants
-              console.log("--- creating cal " + settings.calendar.name);
               calendarContentValues.put("name", settings.calendar.name);
               calendarContentValues.put("calendar_displayName", settings.calendar.name);
               calendarContentValues.put("visible", new java.lang.Integer(1));
@@ -250,10 +282,8 @@ Calendar.createEvent = function(arg) {
                 .build();
               ContentResolver.insert(calUri, calendarContentValues);
               // retrieve the calendar we just created
-              console.log("--- created cal via calUri " + calUri);
               var cals = Calendar._findCalendars(settings.calendar.name);
               if (cals.length > 0) {
-                  console.log("--- created cal " + cals[0]);
                   calendarId = cals[0].id;
               }
           }
@@ -261,7 +291,6 @@ Calendar.createEvent = function(arg) {
       if (calendarId == null) {
           calendarId = settings.calendar.id;
       }
-      console.log("---- creating event in calendarId " + calendarId);
       ContentValues.put(Calendar._fields.CALENDAR.ID, new java.lang.Integer(calendarId));
 
       // recurrence
@@ -274,7 +303,6 @@ Calendar.createEvent = function(arg) {
               var mm = (endDate.getMonth()+1).toString();
               var dd  = endDate.getDate().toString();
               var yyyymmdd = yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
-              console.log("---- recurrence, enddate formatted: " + yyyymmdd);
               ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval + ";UNTIL=" + yyyymmdd);
           }
       }
@@ -282,7 +310,7 @@ Calendar.createEvent = function(arg) {
       var eventsUri = android.net.Uri.parse("content://com.android.calendar/events");
       var uri = ContentResolver.insert(eventsUri, ContentValues);
       var createdEventID = uri.getLastPathSegment();
-      console.log("--- created event " + createdEventID);
+      console.log("---- created event with id: " + createdEventID);
 
       // now add reminders, if any
       if (settings.reminders.first) {
