@@ -14,8 +14,6 @@ tns plugin add nativescript-calendar
 
 If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-calendar-demo).
 
-Here are the supported functions:
-
 ### createEvent
 
 ```js
@@ -52,7 +50,7 @@ Here are the supported functions:
 
   // Want to use a custom calendar for your app? Pass in the 'id' or 'name'.
   // If the name doesn't yet exist the plugin will create it for you.
-  options.calendar: {
+  options.calendar = {
     // id: 3,
     name: "NativeScript Cal"
   };
@@ -64,7 +62,7 @@ Here are the supported functions:
       function(error) {
         console.log("Error creating an Event: " + error);
       }
-  )
+  );
 ```
 
 If you want an 'all day event', make sure you set the dates to midnight like this:
@@ -85,16 +83,16 @@ If you want an 'all day event', make sure you set the dates to midnight like thi
   var options = {
     // when searching, dates are mandatory - the event must be within this interval
     startDate: new Date(new Date().getTime() - (50*24*60*60*1000)),
-    endDate: new Date(new Date().getTime() + (50*24*60*60*1000)),
+    endDate: new Date(new Date().getTime() + (50*24*60*60*1000))
   };
 
   // if you know the Event ID, set it here:
   options.id = '123456';
 
   // you can optionally pass in a few other properties, any event containing these will be returned:
-  options.title: 'groceries';
-  options.location: 'foo';
-  options.notes: 'bar'; // iOS only
+  options.title = 'groceries';
+  options.location = 'foo';
+  options.notes = 'bar'; // iOS only
 
   Calendar.findEvents(options).then(
       function(events) {
@@ -103,7 +101,7 @@ If you want an 'all day event', make sure you set the dates to midnight like thi
       function(error) {
         console.log("Error finding Events: " + error);
       }
-  )
+  );
 ```
 
 The returned 'events' object is an array of JSON events with these properties:
@@ -127,16 +125,16 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
   var options = {
     // when searching, dates are mandatory - the event must be within this interval
     startDate: new Date(new Date().getTime() - (50*24*60*60*1000)),
-    endDate: new Date(new Date().getTime() + (50*24*60*60*1000)),
+    endDate: new Date(new Date().getTime() + (50*24*60*60*1000));
   };
 
   // if you know the Event ID, set it here:
   options.id = '123456';
 
   // you can optionally pass in a few other properties, any event containing these will be deleted:
-  options.title: 'groceries';
-  options.location: 'foo';
-  options.notes: 'bar'; // iOS only
+  options.title = 'groceries';
+  options.location = 'foo';
+  options.notes = 'bar'; // iOS only
 
   Calendar.deleteEvents(options).then(
       function(deletedEventIds) {
@@ -145,7 +143,7 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
       function(error) {
         console.log("Error deleting Events: " + error);
       }
-  )
+  );
 ```
 
 ### listCalendars
@@ -158,5 +156,5 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
       function(error) {
         console.log("Error while listing Calendars: " + error);
       }
-  )
+  );
 ```
