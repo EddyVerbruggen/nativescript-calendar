@@ -130,11 +130,11 @@ Calendar._findEvents = function(arg) {
   var selection = "";
   var selections = [];
 
-  if (settings.title != null) {
+  if (settings.title !== null) {
     selection += Calendar._fields.TITLE + " LIKE ?";
     selections.push("%" + settings.title + "%");
   }
-  if (settings.location != null) {
+  if (settings.location !== null) {
     if (!"".equals(selection)) {
       selection += " AND ";
     }
@@ -247,8 +247,8 @@ Calendar.createEvent = function(arg) {
 
       // there's no separate url field, so adding it to the notes
       var description = settings.notes;
-      if (settings.url != null) {
-        if (settings.notes == null) {
+      if (settings.url !== null) {
+        if (settings.notes === null) {
           description = settings.url;
         } else {
           description += " " + settings.url;
@@ -258,7 +258,7 @@ Calendar.createEvent = function(arg) {
       var ContentResolver = application.android.foregroundActivity.getContentResolver();
       ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders.first || settings.reminders.second ? 1 : 0));
       var calendarId = null;
-      if (settings.calendar.name != null) {
+      if (settings.calendar.name !== null) {
           var calendars = Calendar._findCalendars(settings.calendar.name);
           if (calendars.length > 0) {
               calendarId = calendars[0].id;
@@ -288,14 +288,14 @@ Calendar.createEvent = function(arg) {
               }
           }
       }
-      if (calendarId == null) {
+      if (calendarId === null) {
           calendarId = settings.calendar.id;
       }
       ContentValues.put(Calendar._fields.CALENDAR.ID, new java.lang.Integer(calendarId));
 
       // recurrence
-      if (settings.recurrence.frequency != null) {
-          if (settings.recurrence.endDate == null) {
+      if (settings.recurrence.frequency !== null) {
+          if (settings.recurrence.endDate === null) {
               ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval);
           } else {
               var endDate = arg.recurrence.endDate;

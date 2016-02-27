@@ -76,18 +76,18 @@ Calendar._findEKEvents = function (arg, calendars) {
   var datedEvents = Calendar._eventStore.eventsMatchingPredicate(
       Calendar._eventStore.predicateForEventsWithStartDateEndDateCalendars(arg.startDate, arg.endDate, calendars));
 
-  if (datedEvents == null) {
+  if (datedEvents === null) {
     return null;
   }
 
   var predicates = [];
-  if (arg.title != null) {
+  if (arg.title !== null) {
     predicates.push("title contains[c] '" + arg.title.replace(/'/g, "\\'") + "'");
   }
-  if (arg.location != null) {
+  if (arg.location !== null) {
     predicates.push("location contains[c] '" + arg.location.replace(/'/g, "\\'") + "'");
   }
-  if (arg.notes != null) {
+  if (arg.notes !== null) {
     predicates.push("notes contains[c] '" + arg.notes.replace(/'/g, "\\'") + "'");
   }
 
@@ -101,9 +101,10 @@ Calendar._findEKEvents = function (arg, calendars) {
 
 Calendar._findEKSource = function () {
   // if iCloud is on, it hides the local calendars, so check for iCloud first
-  var eKSources = Calendar._eventStore.sources;
+  var eKSource,
+      eKSources = Calendar._eventStore.sources;
   for (var i = 0, j = eKSources.count; i < j; i++) {
-    var eKSource = eKSources.objectAtIndex(i);
+    eKSource = eKSources.objectAtIndex(i);
     if (eKSource.sourceType == EKSourceTypeCalDAV && eKSource.title == "iCloud") {
       return eKSource;
     }
@@ -111,7 +112,7 @@ Calendar._findEKSource = function () {
 
   // ok, not found.. so it's a local calendar
   for (var k = 0, l = eKSources.count; k < l; k++) {
-    var eKSource = eKSources.objectAtIndex(k);
+    eKSource = eKSources.objectAtIndex(k);
     if (eKSource.sourceType == EKSourceTypeLocal) {
       return eKSource;
     }
@@ -147,7 +148,7 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
 
     var ekCalendar = ekEvent.calendar;
     var attendees = [];
-    if (ekEvent.attendees != null) {
+    if (ekEvent.attendees !== null) {
         for (var k = 0, l = ekEvent.attendees.count; k < l; k++) {
             var ekParticipant = ekEvent.attendees.objectAtIndex(k);
             attendees.push({
@@ -188,9 +189,9 @@ Calendar.findEvents = function (arg) {
       }
 
       var calendars;
-      if (settings.calendar.name == null) {
+      if (settings.calendar.name === null) {
         calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
-        if (calendars.count == 0) {
+        if (calendars.count === 0) {
           reject("No default calendar found. Is access to the Calendar blocked for this app?");
           return;
         }
@@ -200,7 +201,7 @@ Calendar.findEvents = function (arg) {
         if (cals.length > 0) {
             calendar = cals[0];
         }
-        if (calendar == null) {
+        if (calendar === null) {
           reject("Could not find calendar");
           return;
         } else {
@@ -209,9 +210,9 @@ Calendar.findEvents = function (arg) {
       }
       
       // first try to match by id
-      if (settings.id != null) {
+      if (settings.id !== null) {
          var eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
-         if (eKCalendarItem != null) {
+         if (eKCalendarItem !== null) {
              resolve([Calendar._ekEventToJSEvent(eKCalendarItem)]);
              return;
          }
@@ -220,7 +221,7 @@ Calendar.findEvents = function (arg) {
       // if that's not set or resolved, try other properties
       var events = [];
       var matchingEvents = Calendar._findEKEvents(settings, calendars);
-      if (matchingEvents != null) {
+      if (matchingEvents !== null) {
           for (var i = 0, j = matchingEvents.count; i < j; i++) {
               events.push(Calendar._ekEventToJSEvent(matchingEvents.objectAtIndex(i)));
           }
@@ -250,20 +251,20 @@ Calendar.createEvent = function (arg) {
       eKEvent.startDate = settings.startDate;
       eKEvent.endDate = settings.endDate;
 
-      if (settings.url != null) {
+      if (settings.url !== null) {
         eKEvent.URL = NSURL.URLWithString(settings.url);
       }
 
       var duration = settings.endDate.getTime() - settings.startDate.getTime();
       var moduloDay = duration % (1000 * 60 * 60 * 24);
-      if (moduloDay == 0) {
+      if (moduloDay === 0) {
         eKEvent.allDay = true;
       }
 
       var calendar = null;
-      if (settings.calendar.name == null) {
+      if (settings.calendar.name === null) {
         calendar = Calendar._eventStore.defaultCalendarForNewEvents;
-        if (calendar == null) {
+        if (calendar === null) {
           reject("No default calendar found. Is access to the Calendar blocked for this app?");
           return;
         }
@@ -272,11 +273,11 @@ Calendar.createEvent = function (arg) {
         if (cals.length > 0) {
             calendar = cals[0];
         }
-        if (calendar == null) {
+        if (calendar === null) {
           // create it
           calendar = EKCalendar.calendarForEntityTypeEventStore("EKEntityTypeEvent", Calendar._eventStore);
           calendar.title = settings.calendar.name;
-          if (false && settings.calendar.color != null) {
+          if (false && settings.calendar.color !== null) {
             // TODO hex to UIColor
             calendar.CGColor = settings.calendar.color;
           }
@@ -286,17 +287,17 @@ Calendar.createEvent = function (arg) {
       }
       eKEvent.calendar = calendar;
 
-      if (settings.reminders.first != null) {
+      if (settings.reminders.first !== null) {
         eKEvent.addAlarm(EKAlarm.alarmWithRelativeOffset(-1 * settings.reminders.first * 60));
       }
-      if (settings.reminders.second != null) {
+      if (settings.reminders.second !== null) {
         eKEvent.addAlarm(EKAlarm.alarmWithRelativeOffset(-1 * settings.reminders.second * 60));
       }
 
-      if (settings.recurrence.frequency != null) {
+      if (settings.recurrence.frequency !== null) {
         var frequency = Calendar._getRecurrenceFrequency(settings.recurrence.frequency);
         var eKRecurrenceRule = EKRecurrenceRule.alloc().initRecurrenceWithFrequencyIntervalEnd(frequency, settings.recurrence.interval, null);
-        if (arg.recurrence.endDate != null) {
+        if (arg.recurrence.endDate !== null) {
           eKRecurrenceRule.recurrenceEnd = EKRecurrenceEnd.recurrenceEndWithEndDate(arg.recurrence.endDate);
         }
         eKEvent.addRecurrenceRule(eKRecurrenceRule);
@@ -304,7 +305,7 @@ Calendar.createEvent = function (arg) {
 
       var error = null;
       Calendar._eventStore.saveEventSpanError(eKEvent, "EKSpanThisEvent", error);
-      if (error == null) {
+      if (error === null) {
         console.log("---- created event with id: " + eKEvent.calendarItemIdentifier);
         resolve(eKEvent.calendarItemIdentifier);
       } else {
@@ -328,9 +329,9 @@ Calendar.deleteEvents = function (arg) {
       }
 
       var calendars;
-      if (settings.calendar.name == null) {
+      if (settings.calendar.name === null) {
         calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
-        if (calendars.count == 0) {
+        if (calendars.count === 0) {
           reject("No default calendar found. Is access to the Calendar blocked for this app?");
           return;
         }
@@ -340,7 +341,7 @@ Calendar.deleteEvents = function (arg) {
         if (cals.length > 0) {
             calendar = cals[0];
         }
-        if (calendar == null) {
+        if (calendar === null) {
           reject("Could not find calendar");
           return;
         } else {
@@ -349,9 +350,9 @@ Calendar.deleteEvents = function (arg) {
       }
 
       // first try to match by id
-      if (settings.id != null) {
+      if (settings.id !== null) {
          var eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
-         if (eKCalendarItem != null) {
+         if (eKCalendarItem !== null) {
              Calendar._eventStore.removeEventSpanError(eKCalendarItem, EKSpanThisEvent, null);
              resolve([settings.id]);
              return;
@@ -361,7 +362,7 @@ Calendar.deleteEvents = function (arg) {
       // if that's not set or resolved, try other properties
       var matchingEvents = Calendar._findEKEvents(settings, calendars);
       var deletedEventIds = [];
-      if (matchingEvents != null) {
+      if (matchingEvents !== null) {
         for (var i = 0, j = matchingEvents.count; i < j; i++) {
           var ekEvent = matchingEvents.objectAtIndex(i);
           deletedEventIds.push(ekEvent.calendarItemIdentifier);

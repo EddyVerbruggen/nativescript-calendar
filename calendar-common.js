@@ -19,7 +19,7 @@ Calendar.defaults = {
   },
   recurrence: {
     frequency: null,
-    interval: null, // if frequency is DAILY, then 1 = every day, 2 = every other day 
+    interval: 1, // if frequency is DAILY, then 1 = every day, 2 = every other day 
     endDate: null
   },
   calendar: {
