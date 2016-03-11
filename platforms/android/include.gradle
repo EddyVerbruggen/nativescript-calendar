@@ -1,3 +1,11 @@
+android {
+    productFlavors {
+        "nativescript-calendar" {
+            dimension "nativescript-calendar"
+        }
+    }
+}
+
 dependencies {
     compile "com.android.support:support-v4:+"
 }
