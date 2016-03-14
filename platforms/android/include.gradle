@@ -1,7 +1,7 @@
 android {
     productFlavors {
-        "nativescript-calendar" {
-            dimension "nativescript-calendar"
+        "nscal" {
+            dimension "nscal"
         }
     }
 }
