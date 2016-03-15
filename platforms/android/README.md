@@ -9,6 +9,6 @@ Steps to update the `.aar` file:
 * Update `calendarpermissions/src/main/AndroidManifest.xml` as needed
 * Open the Gradle toolwindow
 * Run calendarpermissions > Tasks > build > build
-* The (release) .aar will be generated in `calendarpermissions/build/outputs/aar`
+* The (release) .aar will be generated in `libraryproject/calendarpermissions/build/outputs/aar`
 * Copy that to the `platforms/android` folder, replacing the old `.aar`
 * Commit and push the changes as usual
