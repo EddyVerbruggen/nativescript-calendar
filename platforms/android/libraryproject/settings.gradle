@@ -1,1 +1,1 @@
-include ':app', ':calendarpermissions'
+include ':calendarpermissions'
