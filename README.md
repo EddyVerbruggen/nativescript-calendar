@@ -62,7 +62,7 @@ If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen
       function(error) {
         console.log("Error creating an Event: " + error);
       }
-  )
+  );
 ```
 
 If you want an 'all day event', make sure you set the dates to midnight like this:
@@ -101,7 +101,7 @@ If you want an 'all day event', make sure you set the dates to midnight like thi
       function(error) {
         console.log("Error finding Events: " + error);
       }
-  )
+  );
 ```
 
 The returned 'events' object is an array of JSON events with these properties:
