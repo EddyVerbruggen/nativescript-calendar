@@ -80,7 +80,7 @@ Calendar._findCalendars = function (filterByName) {
       "_id",
       "name"
   ];
-  
+
   var sortOrder = null;
   var selections = null;
   var selection = "visible=1";
@@ -99,7 +99,7 @@ Calendar._findCalendars = function (filterByName) {
   if (cursor.moveToFirst()) {
     do {
       var name = cursor.getString(1);
-      if (!filterByName || name == filterByName) {  
+      if (!filterByName || name == filterByName) {
         var calendar = {
             id: cursor.getLong(0),
             name: name
@@ -115,7 +115,7 @@ Calendar._findEvents = function(arg) {
   var settings = Calendar.merge(arg, Calendar.defaults);
 
   var projection = [
-      Calendar._fields.EVENT_ID,      
+      Calendar._fields.EVENT_ID,
       Calendar._fields.CALENDAR.ID,
       Calendar._fields.CALENDAR.NAME,
       Calendar._fields.TITLE,
@@ -125,17 +125,17 @@ Calendar._findEvents = function(arg) {
       Calendar._fields.ENDDATE,
       Calendar._fields.ALLDAY
   ];
-  
+
   var sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
   var selection = "";
   var selections = [];
 
-  if (settings.title !== null) {
+  if (settings.title !== undefined) {
     selection += Calendar._fields.TITLE + " LIKE ?";
     selections.push("%" + settings.title + "%");
   }
-  if (settings.location !== null) {
-    if (!"".equals(selection)) {
+  if (settings.location !== undefined) {
+    if ("" !== selection) {
       selection += " AND ";
     }
     selection += Calendar._fields.LOCATION + " LIKE ?";
@@ -241,7 +241,7 @@ Calendar.createEvent = function(arg) {
       ContentValues.put(Calendar._fields.TIMEZONE, java.util.TimeZone.getDefault().getID());
       ContentValues.put(Calendar._fields.STARTDATE, new java.lang.Long(settings.startDate.getTime()));
       ContentValues.put(Calendar._fields.ENDDATE, new java.lang.Long(settings.endDate.getTime()));
-      
+
       ContentValues.put(Calendar._fields.TITLE, settings.title);
       ContentValues.put(Calendar._fields.LOCATION, settings.location);
 
@@ -306,7 +306,7 @@ Calendar.createEvent = function(arg) {
               ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval + ";UNTIL=" + yyyymmdd);
           }
       }
-      
+
       var eventsUri = android.net.Uri.parse("content://com.android.calendar/events");
       var uri = ContentResolver.insert(eventsUri, ContentValues);
       var createdEventID = uri.getLastPathSegment();

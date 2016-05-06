@@ -81,13 +81,13 @@ Calendar._findEKEvents = function (arg, calendars) {
   }
 
   var predicates = [];
-  if (arg.title !== null) {
+  if (arg.title !== undefined) {
     predicates.push("title contains[c] '" + arg.title.replace(/'/g, "\\'") + "'");
   }
-  if (arg.location !== null) {
+  if (arg.location !== undefined) {
     predicates.push("location contains[c] '" + arg.location.replace(/'/g, "\\'") + "'");
   }
-  if (arg.notes !== null) {
+  if (arg.notes !== undefined) {
     predicates.push("notes contains[c] '" + arg.notes.replace(/'/g, "\\'") + "'");
   }
 
