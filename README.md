@@ -10,6 +10,23 @@ From the command prompt go to your app's root folder and execute:
 tns plugin add nativescript-calendar
 ```
 
+## iOS runtime permission reason
+You probably have seen a permission popup like this before (this plugin will trigger one as well, automatically):
+
+<img src="ios_permission_custom_reason.png" width="316px" height="180px"/>
+
+iOS 10+ requires not only this popup, but also a _reason_. In this case it's  "Custom message from App_Resources".
+
+You can provide your own reason for accessing the calendar by adding something like this to `app/App_Resources/ios/Info.plist`:
+
+```xml
+  <key>NSCalendarsUsageDescription</key>
+  <string>My reason justifying fooling around with your calendar</string>
+```
+
+_To not crash your app in case you forgot to provide the reason this plugin adds an empty reason to the `.plist` during build. This value gets overridden by anything you specified yourself. You're welcome._
+
+
 ## Usage
 
 If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen/nativescript-calendar-demo).
