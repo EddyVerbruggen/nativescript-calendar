@@ -5,6 +5,7 @@ Calendar._eventStore = null;
 
 (function () {
     setTimeout(function() {
+      // TODO see https://github.com/EddyVerbruggen/nativescript-calendar/issues/1
         Calendar._requestPermission();
     }, 500);
 })();
