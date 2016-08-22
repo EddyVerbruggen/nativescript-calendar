@@ -1,6 +1,6 @@
 {
   "name": "nativescript-calendar",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Interact with the native calendar. Add, Update, Read, you name it.",
   "main": "calendar.js",
   "nativescript": {

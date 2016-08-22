@@ -251,7 +251,7 @@ Calendar.createEvent = function (arg) {
       eKEvent.startDate = settings.startDate;
       eKEvent.endDate = settings.endDate;
 
-      if (settings.url !== null) {
+      if (settings.url) {
         eKEvent.URL = NSURL.URLWithString(settings.url);
       }
 

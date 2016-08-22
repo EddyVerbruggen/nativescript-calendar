@@ -247,11 +247,11 @@ Calendar.createEvent = function(arg) {
 
       // there's no separate url field, so adding it to the notes
       var description = settings.notes;
-      if (settings.url !== null) {
-        if (settings.notes === null) {
-          description = settings.url;
-        } else {
+      if (settings.url) {
+        if (settings.notes) {
           description += " " + settings.url;
+        } else {
+          description = settings.url;
         }
       }
       ContentValues.put(Calendar._fields.MESSAGE, description);
