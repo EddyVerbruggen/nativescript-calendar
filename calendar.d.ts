@@ -184,6 +184,13 @@ declare module "nativescript-calendar" {
      */
     export function listCalendars(): Promise<Calendar[]>;
 
+    /**
+     * No real reason to use this as it's all handled automatically for you.
+     */
     export function hasPermission(): Promise<boolean>;
+
+    /**
+     * No real reason to use this as it's all handled automatically for you.
+     */
     export function requestPermission(): Promise<any>;
 }

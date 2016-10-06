@@ -175,3 +175,6 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
       }
   )
 ```
+
+## Changelog
+1.1.0  By popular demand permissions on iOS and Android are now just in time instead of upon requiring the plugin. And still, all permissions are handled automatically for you.
