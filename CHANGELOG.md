@@ -1,13 +1,5 @@
 # Change Log
 
-## [Unreleased](https://github.com/EddyVerbruggen/nativescript-calendar/tree/HEAD)
-
-[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.1...HEAD)
-
-**Fixed bugs:**
-
-- NPE on Android in \_requestPermission executed by timeout [\#5](https://github.com/EddyVerbruggen/nativescript-calendar/issues/5)
-
 ## [1.1.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.1) (2016-10-15)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.0.7...1.1.1)
 
@@ -18,6 +10,7 @@
 **Fixed bugs:**
 
 - Missing comma in 1.1.0 preventing it from installing [\#7](https://github.com/EddyVerbruggen/nativescript-calendar/issues/7)
+- NPE on Android in \_requestPermission executed by timeout [\#5](https://github.com/EddyVerbruggen/nativescript-calendar/issues/5)
 
 **Closed issues:**
 
