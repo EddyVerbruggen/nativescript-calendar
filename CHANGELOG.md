@@ -4,13 +4,9 @@
 
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.1...HEAD)
 
-**Implemented enhancements:**
-
-- NPE on Android in \_requestPermission executed by timeout [\#5](https://github.com/EddyVerbruggen/nativescript-calendar/issues/5)
-
 **Fixed bugs:**
 
-- NPE on Android in \\_requestPermission executed by timeout [\#5](https://github.com/EddyVerbruggen/nativescript-calendar/issues/5)
+- NPE on Android in \_requestPermission executed by timeout [\#5](https://github.com/EddyVerbruggen/nativescript-calendar/issues/5)
 
 ## [1.1.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.1) (2016-10-15)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.0.7...1.1.1)
