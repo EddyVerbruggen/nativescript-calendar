@@ -1,6 +1,6 @@
 {
   "name": "nativescript-calendar",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Interact with the native calendar. Add, Update, Read, you name it.",
   "main": "calendar.js",
   "nativescript": {
@@ -14,7 +14,7 @@
     "url": "https://github.com/eddyverbruggen/nativescript-calendar.git"
   },
   "keywords": [
-    "ecosystem:nativescript"
+    "ecosystem:nativescript",
     "NativeScript",
     "Calendar",
     "Agenda"
