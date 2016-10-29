@@ -52,11 +52,11 @@ Calendar._hasPermission = function(perms) {
 };
 
 Calendar._hasReadPermission = function() {
-  return Calendar._hasPermission(android.Manifest.permission.READ_CALENDAR);
+  return Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR]);
 };
 
 Calendar._hasWritePermission = function() {
-  return Calendar._hasPermission(android.Manifest.permission.WRITE_CALENDAR);
+  return Calendar._hasPermission([android.Manifest.permission.WRITE_CALENDAR]);
 };
 
 Calendar._requestPermission = function(permissions, onPermissionGranted, reject) {
