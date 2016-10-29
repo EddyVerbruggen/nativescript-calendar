@@ -286,11 +286,11 @@ Calendar.createEvent = function (arg) {
           }
           if (calendar === null) {
             // create it
-            calendar = EKCalendar.calendarForEntityTypeEventStore("EKEntityTypeEvent", Calendar._eventStore);
+            calendar = EKCalendar.calendarForEntityTypeEventStore(EKEntityTypeEvent, Calendar._eventStore);
             calendar.title = settings.calendar.name;
             if (false && settings.calendar.color !== null) {
               // TODO hex to UIColor
-              calendar.CGColor = settings.calendar.color;
+              // calendar.CGColor = settings.calendar.color;
             }
             calendar.source = Calendar._findEKSource();
             Calendar._eventStore.saveCalendarCommitError(calendar, true, null);

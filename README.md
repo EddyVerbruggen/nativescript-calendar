@@ -26,6 +26,16 @@ You can provide your own reason for accessing the calendar by adding something l
 
 _To not crash your app in case you forgot to provide the reason this plugin adds an empty reason to the `.plist` during build. This value gets overridden by anything you specified yourself. You're welcome._
 
+## TypeScript Usage
+Of course you can use this plugin with TypeScript, just import the plugin and use
+the functions summed up below like this:
+
+```js
+import * as Calendar from "nativescript-calendar";
+
+// example for listCalendars:
+Calendar.listCalendars().then(/* .. */);
+```
 
 ## Usage
 
