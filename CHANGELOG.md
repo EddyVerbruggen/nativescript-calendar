@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.1.3](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.3) (2016-10-29)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.2...1.1.3)
+
+**Fixed bugs:**
+
+- Assertion failure [\#10](https://github.com/EddyVerbruggen/nativescript-calendar/issues/10)
+
 ## [1.1.2](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.2) (2016-10-29)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.1...1.1.2)
 
