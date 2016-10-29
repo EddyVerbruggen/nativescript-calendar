@@ -3,7 +3,7 @@
 ## [1.1.2](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.2) (2016-10-29)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.1...1.1.2)
 
-**Closed issues:**
+**Fixed bugs:**
 
 - \[Android\] Calendar.findEvents missing id-filter [\#9](https://github.com/EddyVerbruggen/nativescript-calendar/issues/9)
 
