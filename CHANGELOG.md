@@ -1,5 +1,24 @@
 # Change Log
 
+## [1.2.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.0) (2016-11-22)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.3...1.2.0)
+
+**Implemented enhancements:**
+
+- New feature: allow specifying a calendar color [\#14](https://github.com/EddyVerbruggen/nativescript-calendar/issues/14)
+- New feature: deleteCalendar [\#13](https://github.com/EddyVerbruggen/nativescript-calendar/issues/13)
+- Android: Cannot delete custom local calendar [\#6](https://github.com/EddyVerbruggen/nativescript-calendar/issues/6)
+
+**Fixed bugs:**
+
+- Android: Calendar.listCalendars \(actually Calendar.\_findCalendars\) results in a crash [\#12](https://github.com/EddyVerbruggen/nativescript-calendar/issues/12)
+- Android: Cannot delete custom local calendar [\#6](https://github.com/EddyVerbruggen/nativescript-calendar/issues/6)
+
+**Closed issues:**
+
+- findEvents logs an error but returns the correct result \(iOS Simulator?\) [\#11](https://github.com/EddyVerbruggen/nativescript-calendar/issues/11)
+- How to use this in ng nativescript [\#8](https://github.com/EddyVerbruggen/nativescript-calendar/issues/8)
+
 ## [1.1.3](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.1.3) (2016-10-29)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.2...1.1.3)
 
