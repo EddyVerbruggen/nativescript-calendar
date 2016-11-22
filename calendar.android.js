@@ -41,10 +41,9 @@ Calendar._hasPermission = function(perms) {
     return true;
   }
 
-  var ctx = utils.ad.getApplicationContext();
   for (var p in perms) {
     var permission = perms[p];
-    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== android.support.v4.content.ContextCompat.checkSelfPermission(ctx, permission)) {
+    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
       return false;
     }
   }
@@ -113,7 +112,7 @@ Calendar._findCalendars = function (filterByName) {
   var selections = null;
   var selection = "visible=1";
 
-  var contentResolver = application.android.foregroundActivity.getContentResolver();
+  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
   var uriBuilder = android.provider.CalendarContract.Calendars.CONTENT_URI.buildUpon();
   var uri = uriBuilder.build();
   var cursor = contentResolver.query(
@@ -179,7 +178,7 @@ Calendar._findEvents = function(arg) {
   var uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
   android.content.ContentUris.appendId(uriBuilder, settings.startDate.getTime());
   android.content.ContentUris.appendId(uriBuilder, settings.endDate.getTime());
-  var contentResolver = application.android.foregroundActivity.getContentResolver();
+  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
   var uri = uriBuilder.build();
   var cursor = contentResolver.query(
       uri,
@@ -265,7 +264,7 @@ Calendar.deleteEvents = function(arg) {
 
       var onPermissionGranted = function() {
         var events = Calendar._findEvents(arg);
-        var ContentResolver = application.android.foregroundActivity.getContentResolver();
+        var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
         var deletedEventIds = [];
         for (var e in events) {
           var event = events[e];
@@ -321,7 +320,7 @@ Calendar.createEvent = function(arg) {
           }
         }
         ContentValues.put(Calendar._fields.MESSAGE, description);
-        var ContentResolver = application.android.foregroundActivity.getContentResolver();
+        var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
         ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders.first || settings.reminders.second ? 1 : 0));
         var calendarId = null;
         if (settings.calendar.name !== null) {

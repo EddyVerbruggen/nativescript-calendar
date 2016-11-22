@@ -1,5 +1,4 @@
 var Calendar = require("./calendar-common");
-var application = require("application");
 
 Calendar._eventStore = null;
 
