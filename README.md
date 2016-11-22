@@ -75,11 +75,14 @@ If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen
     endDate: new Date(new Date().getTime() + (10*24*60*60*1000)) // 10 days
   };
 
-  // Want to use a custom calendar for your app? Pass in the 'id' or 'name'.
+  // Want to use a custom calendar for your app? Pass in the 'name'.
   // If the name doesn't yet exist the plugin will create it for you.
   options.calendar = {
-    // id: 3,
     name: "NativeScript Cal"
+    // the color, in this case red
+    color: "#FF0000",
+    // Can be used on Android to group the calendars. Examples: Your app name, or an emailaddress
+    accountName: "My App Name"
   };
 
   Calendar.createEvent(options).then(
@@ -184,4 +187,16 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
         console.log("Error while listing Calendars: " + error);
       }
   )
+```
+
+### deleteCalendar
+
+##### TypeScript
+```js
+  Calendar.deleteCalendar({
+    name: "My Calendar name"
+  }).then((id) => {
+    // id may be null if none was deleted
+    console.log("Deleted Calendar with id " + id);
+  });
 ```

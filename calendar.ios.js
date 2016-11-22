@@ -1,4 +1,6 @@
 var Calendar = require("./calendar-common");
+var application = require("application");
+var Color = require("color").Color;
 
 Calendar._eventStore = null;
 
@@ -287,9 +289,9 @@ Calendar.createEvent = function (arg) {
             // create it
             calendar = EKCalendar.calendarForEntityTypeEventStore(EKEntityTypeEvent, Calendar._eventStore);
             calendar.title = settings.calendar.name;
-            if (false && settings.calendar.color !== null) {
-              // TODO hex to UIColor
-              // calendar.CGColor = settings.calendar.color;
+            if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
+              var iosColor = new Color(settings.calendar.color).ios;
+              calendar.CGColor = iosColor;
             }
             calendar.source = Calendar._findEKSource();
             Calendar._eventStore.saveCalendarCommitError(calendar, true, null);
@@ -390,6 +392,38 @@ Calendar.deleteEvents = function (arg) {
       Calendar._invokeFunctionOnEventStore(onPermissionGranted, reject);
     } catch (ex) {
       console.log("Error in Calendar.deleteEvent: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+Calendar.deleteCalendar = function (arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      if (!arg.name) {
+        reject("name is mandatory");
+        return;
+      }
+
+      var onPermissionGranted = function() {
+        var calendars = Calendar._findCalendars(arg.name);
+        var deletedCalId = null;
+
+        if (calendars.length > 0) {
+          // syntactically this is a loop but there's most likely only 1 item
+          for (var c in calendars) {
+            var calendar = calendars[c];
+            Calendar._eventStore.removeCalendarCommitError(calendar, true, null);
+            deletedCalId = calendar.calendarIdentifier;
+          }
+        }
+
+        resolve(deletedCalId);
+      };
+
+      Calendar._invokeFunctionOnEventStore(onPermissionGranted, reject);
+    } catch (ex) {
+      console.log("Error in Calendar.deleteCalendar: " + ex);
       reject(ex);
     }
   });

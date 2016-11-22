@@ -52,6 +52,15 @@ declare module "nativescript-calendar" {
        */
       calendar: {
         name: string;
+        /**
+         * Example, red: "#FF0000"
+         */
+        color?: string;
+        /**
+         * Can be used on Android to group the calendars.
+         * Examples: Your app name, or an emailaddress.
+         */
+        accountName?: string;
       };
 
       /**
@@ -128,6 +137,10 @@ declare module "nativescript-calendar" {
     export interface DeleteEventsOptions extends FindOrDeleteEventsOptions {
     }
 
+    export interface DeleteCalendarOptions {
+      name: string;
+    }
+
     export interface Calendar {
       id: string;
       name: string;
@@ -183,6 +196,11 @@ declare module "nativescript-calendar" {
      * List all available Calendars on the user's device.
      */
     export function listCalendars(): Promise<Calendar[]>;
+
+    /**
+     * Returns the ID of the deleted calendar (or null if none was deleted).
+     */
+    export function deleteCalendar(options: DeleteCalendarOptions): Promise<string>;
 
     /**
      * No real reason to use this as it's all handled automatically for you.

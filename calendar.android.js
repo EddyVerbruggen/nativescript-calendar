@@ -1,5 +1,6 @@
 var application = require("application");
 var utils = require("utils/utils");
+var Color = require("color").Color;
 var Calendar = require("./calendar-common");
 
 Calendar._fields = {
@@ -331,22 +332,26 @@ Calendar.createEvent = function(arg) {
             // create it
             var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
             var calendarContentValues = new android.content.ContentValues();
-            calendarContentValues.put("name", settings.calendar.name);
-            calendarContentValues.put("calendar_displayName", settings.calendar.name);
-            calendarContentValues.put("visible", new java.lang.Integer(1));
+            var accountName = settings.calendar.accountName || settings.calendar.name;
+            calendarContentValues.put("account_name", accountName);
             calendarContentValues.put("account_type", "LOCAL");
             calendarContentValues.put("name", settings.calendar.name);
-            calendarContentValues.put("account_name", settings.calendar.name);
-            calendarContentValues.put("ownerAccount", settings.calendar.name);
-            //   calendarContentValues.put("calendar_color", android.graphics.Color.RED);
+            calendarContentValues.put("calendar_displayName", settings.calendar.name);
+            calendarContentValues.put("calendar_access_level", new java.lang.Integer(700)); // "owner"
+            if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
+              var androidColor = new Color(settings.calendar.color).android;
+              calendarContentValues.put("calendar_color", new java.lang.Integer(androidColor));
+            }
+            calendarContentValues.put("visible", new java.lang.Integer(1));
             calendarContentValues.put("sync_events", new java.lang.Integer(1));
+
             calUri = calUri.buildUpon()
                 .appendQueryParameter("caller_is_syncadapter", "true")
-                .appendQueryParameter("account_name", settings.calendar.name)
+                .appendQueryParameter("account_name", accountName)
                 .appendQueryParameter("account_type", "LOCAL")
                 .build();
             ContentResolver.insert(calUri, calendarContentValues);
-            // retrieve the calendar we just created
+            // retrieve the calendar we've' just created
             var cals = Calendar._findCalendars(settings.calendar.name);
             if (cals.length > 0) {
               calendarId = cals[0].id;
@@ -406,6 +411,47 @@ Calendar.createEvent = function(arg) {
       onPermissionGranted();
     } catch (ex) {
       console.log("Error in Calendar.createEvent: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+Calendar.deleteCalendar = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      if (!arg.name) {
+        reject("name is mandatory");
+        return;
+      }
+
+      var onPermissionGranted = function() {
+        var calendars = Calendar._findCalendars(arg.name);
+        var deletedCalId = null;
+
+        if (calendars.length > 0) {
+          var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
+          var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+
+          // syntactically this is a loop but there's most likely only 1 item
+          for (var c in calendars) {
+            var calendar = calendars[c];
+            var deleteUri = android.content.ContentUris.withAppendedId(calUri, calendar.id);
+            ContentResolver.delete(deleteUri, null, null);
+            deletedCalId = calendar.id;
+          }
+        }
+
+        resolve(deletedCalId);
+      };
+
+      if (!Calendar._hasWritePermission()) {
+        Calendar._requestWritePermission(onPermissionGranted, reject);
+        return;
+      }
+
+      onPermissionGranted();
+    } catch (ex) {
+      console.log("Error in Calendar.deleteCalendar: " + ex);
       reject(ex);
     }
   });
