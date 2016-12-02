@@ -1,2 +1,4 @@
+.idea
+.vscode
 platforms/android/libraryproject
 ios_permission_custom_reason.png
