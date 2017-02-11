@@ -300,6 +300,9 @@ Calendar.createEvent = function(arg) {
         reject("startDate and endDate are mandatory");
         return;
       }
+      if (!arg || !arg.reminders) {
+        settings.reminders = null;
+      }
 
       var onPermissionGranted = function() {
         var ContentValues = new android.content.ContentValues();
@@ -322,7 +325,7 @@ Calendar.createEvent = function(arg) {
         }
         ContentValues.put(Calendar._fields.MESSAGE, description);
         var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
-        ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders.first || settings.reminders.second ? 1 : 0));
+        ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders && (settings.reminders.first || settings.reminders.second) ? 1 : 0));
         var calendarId = null;
         if (settings.calendar.name !== null) {
           var calendars = Calendar._findCalendars(settings.calendar.name);
@@ -383,14 +386,14 @@ Calendar.createEvent = function(arg) {
         console.log("---- created event with id: " + createdEventID);
 
         // now add reminders, if any
-        if (settings.reminders.first) {
+        if (settings.reminders && settings.reminders.first) {
           var firstReminderContentValues = new android.content.ContentValues();
           firstReminderContentValues.put("event_id", createdEventID);
           firstReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.first));
           firstReminderContentValues.put("method", new java.lang.Integer(1));
           ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), firstReminderContentValues);
         }
-        if (settings.reminders.second) {
+        if (settings.reminders && settings.reminders.second) {
           var secondReminderContentValues = new android.content.ContentValues();
           secondReminderContentValues.put("event_id", createdEventID);
           secondReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.second));

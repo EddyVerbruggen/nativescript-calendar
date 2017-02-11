@@ -253,6 +253,9 @@ Calendar.createEvent = function (arg) {
         reject("startDate and endDate are mandatory");
         return;
       }
+      if (!arg || !arg.reminders) {
+        settings.reminders = null;
+      }
 
       var onPermissionGranted = function() {
         var eKEvent = EKEvent.eventWithEventStore(Calendar._eventStore);
@@ -299,10 +302,10 @@ Calendar.createEvent = function (arg) {
         }
         eKEvent.calendar = calendar;
 
-        if (settings.reminders.first !== null) {
+        if (settings.reminders && settings.reminders.first !== null) {
           eKEvent.addAlarm(EKAlarm.alarmWithRelativeOffset(-1 * settings.reminders.first * 60));
         }
-        if (settings.reminders.second !== null) {
+        if (settings.reminders && settings.reminders.second !== null) {
           eKEvent.addAlarm(EKAlarm.alarmWithRelativeOffset(-1 * settings.reminders.second * 60));
         }
 
