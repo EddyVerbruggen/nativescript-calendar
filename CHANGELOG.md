@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.1) (2017-02-11)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.0...1.2.1)
+
+**Fixed bugs:**
+
+- Possible to specify no reminder? [\#15](https://github.com/EddyVerbruggen/nativescript-calendar/issues/15)
+
 ## [1.2.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.0) (2016-11-22)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.1.3...1.2.0)
 
