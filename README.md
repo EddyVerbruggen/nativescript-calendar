@@ -1,5 +1,15 @@
 # NativeScript Calendar Plugin
 
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
+
+[npm-image]:http://img.shields.io/npm/v/nativescript-calendar.svg
+[npm-url]:https://npmjs.org/package/nativescript-calendar
+[downloads-image]:http://img.shields.io/npm/dm/nativescript-calendar.svg
+[twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/eddyverbruggen
+
 The Calendar plugin allows you to manipulate events in the user's native Calendar. You can find, create and delete events in either the default or a custom calendar.
 
 If you're looking for an awesome in-app UI for the native calendar, then [check this out](http://docs.telerik.com/devtools/nativescript-ui/Controls/Calendar/calendar-overview).

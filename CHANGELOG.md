@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.2.2](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.2) (2017-05-05)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.1...1.2.2)
+
+**Fixed bugs:**
+
+- Problem with building an app with the plugin for Android [\#22](https://github.com/EddyVerbruggen/nativescript-calendar/issues/22)
+
 ## [1.2.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.1) (2017-02-11)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.0...1.2.1)
 
