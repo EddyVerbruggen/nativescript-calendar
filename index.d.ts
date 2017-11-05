@@ -144,6 +144,7 @@ declare module "nativescript-calendar" {
     export interface Calendar {
       id: string;
       name: string;
+      displayName: string;
     }
 
     export interface Event {
