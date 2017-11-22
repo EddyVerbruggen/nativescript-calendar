@@ -155,6 +155,9 @@ declare module "nativescript-calendar" {
       endDate: Date;
       allDay: boolean;
       calendar: Calendar;
+      instanceBeginDate: Date;
+      instanceEndDate: Date;
+      recurringRule: string;
       /**
        * iOS only.
        */
