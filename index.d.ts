@@ -185,7 +185,7 @@ declare module "nativescript-calendar" {
 
       export interface Reminder {
         eventId: string;
-        minutes: Number;
+        minutes: number;
         method: string;
       }
   

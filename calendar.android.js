@@ -203,7 +203,7 @@ Calendar._findEvents = function(arg) {
   if (cursor.moveToFirst()) {
     do {
       var event = {
-        id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
+        id: cursor.getString(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
         location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
@@ -248,7 +248,7 @@ Calendar._findReminders = function(arg) {
   if (cursor.moveToFirst()) {
     do {
       var event = {
-        eventId: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.EVENT_ID)),
+        eventId: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.EVENT_ID)),
         minutes: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.MINUTES)),
         method: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.METHOD))
       };
