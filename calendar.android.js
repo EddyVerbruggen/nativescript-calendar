@@ -22,6 +22,12 @@ Calendar._fields = {
   RRULE: "rrule"
 };
 
+Calendar._remindersFields = {
+  EVENT_ID: android.provider.CalendarContract.Reminders.EVENT_ID,
+  MINUTES: "minutes",
+  METHOD: "method"
+};
+
 (function () {
   application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, function (args) {
     for (var i = 0; i < args.permissions.length; i++) {
@@ -218,6 +224,40 @@ Calendar._findEvents = function(arg) {
   return events;
 };
 
+Calendar._findReminders = function(arg) {
+  var settings = arg;
+
+  var projection = [
+    Calendar._remindersFields.EVENT_ID,
+    Calendar._remindersFields.MINUTES,
+    Calendar._remindersFields.METHOD
+  ]
+
+  var selection = "";
+  var selectionArgs = []; 
+  selection += Calendar._remindersFields.EVENT_ID + " = ?";
+  selectionArgs.push(settings.eventId);
+
+  var uriBuilder = android.provider.CalendarContract.Reminders.CONTENT_URI.buildUpon();
+  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  var uri = uriBuilder.build();
+
+  var cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
+
+  var reminders = [];
+  if (cursor.moveToFirst()) {
+    do {
+      var event = {
+        eventId: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.EVENT_ID)),
+        minutes: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.MINUTES)),
+        method: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.METHOD))
+      };
+      reminders.push(event);
+    } while (cursor.moveToNext());
+  }
+  return reminders;
+};
+
 Calendar.listCalendars = function(arg) {
   return new Promise(function (resolve, reject) {
     try {
@@ -258,6 +298,31 @@ Calendar.findEvents = function(arg) {
       onPermissionGranted();
     } catch (ex) {
       console.log("Error in Calendar.findEvents: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+Calendar.findReminders = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      if (!arg.eventId) {
+        reject("eventId is mandatory");
+        return;
+      }
+
+      var onPermissionGranted = function() {
+        resolve(Calendar._findReminders(arg));
+      };
+
+      if (!Calendar._hasReadPermission()) {
+        Calendar._requestReadPermission(onPermissionGranted, reject);
+        return;
+      }
+
+      onPermissionGranted();
+    } catch (ex) {
+      console.log("Error in Calendar.findReminders: " + ex);
       reject(ex);
     }
   });
