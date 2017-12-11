@@ -22,6 +22,13 @@ Calendar._fields = {
   RRULE: "rrule"
 };
 
+Calendar._remindersFields = {
+  ID: android.provider.CalendarContract.Reminders._ID,
+  EVENT_ID: android.provider.CalendarContract.Reminders.EVENT_ID,
+  MINUTES: "minutes",
+  METHOD: "method"
+};
+
 (function () {
   application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, function (args) {
     for (var i = 0; i < args.permissions.length; i++) {
@@ -197,7 +204,7 @@ Calendar._findEvents = function(arg) {
   if (cursor.moveToFirst()) {
     do {
       var event = {
-        id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
+        id: cursor.getString(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
         location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
@@ -216,6 +223,42 @@ Calendar._findEvents = function(arg) {
     } while (cursor.moveToNext());
   }
   return events;
+};
+
+Calendar._findReminders = function(arg) {
+  var settings = arg;
+
+  var projection = [
+    Calendar._remindersFields.ID,
+    Calendar._remindersFields.EVENT_ID,
+    Calendar._remindersFields.MINUTES,
+    Calendar._remindersFields.METHOD
+  ]
+
+  var selection = "";
+  var selectionArgs = []; 
+  selection += Calendar._remindersFields.EVENT_ID + " = ?";
+  selectionArgs.push(settings.eventId);
+
+  var uriBuilder = android.provider.CalendarContract.Reminders.CONTENT_URI.buildUpon();
+  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  var uri = uriBuilder.build();
+
+  var cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
+
+  var reminders = [];
+  if (cursor.moveToFirst()) {
+    do {
+      var event = {
+        _id: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.ID)),
+        eventId: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.EVENT_ID)),
+        minutes: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.MINUTES)),
+        method: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.METHOD))
+      };
+      reminders.push(event);
+    } while (cursor.moveToNext());
+  }
+  return reminders;
 };
 
 Calendar.listCalendars = function(arg) {
@@ -258,6 +301,31 @@ Calendar.findEvents = function(arg) {
       onPermissionGranted();
     } catch (ex) {
       console.log("Error in Calendar.findEvents: " + ex);
+      reject(ex);
+    }
+  });
+};
+
+Calendar.findReminders = function(arg) {
+  return new Promise(function (resolve, reject) {
+    try {
+      if (!arg.eventId) {
+        reject("eventId is mandatory");
+        return;
+      }
+
+      var onPermissionGranted = function() {
+        resolve(Calendar._findReminders(arg));
+      };
+
+      if (!Calendar._hasReadPermission()) {
+        Calendar._requestReadPermission(onPermissionGranted, reject);
+        return;
+      }
+
+      onPermissionGranted();
+    } catch (ex) {
+      console.log("Error in Calendar.findReminders: " + ex);
       reject(ex);
     }
   });
@@ -395,18 +463,10 @@ Calendar.createEvent = function(arg) {
 
         // now add reminders, if any
         if (settings.reminders && settings.reminders.first) {
-          var firstReminderContentValues = new android.content.ContentValues();
-          firstReminderContentValues.put("event_id", createdEventID);
-          firstReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.first));
-          firstReminderContentValues.put("method", new java.lang.Integer(1));
-          ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), firstReminderContentValues);
+          Calendar.addReminder({ eventId: createdEventID, minutes: settings.reminders.first });
         }
         if (settings.reminders && settings.reminders.second) {
-          var secondReminderContentValues = new android.content.ContentValues();
-          secondReminderContentValues.put("event_id", createdEventID);
-          secondReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.second));
-          secondReminderContentValues.put("method", new java.lang.Integer(1));
-          ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), secondReminderContentValues);
+          Calendar.addReminder({ eventId: createdEventID, minutes: settings.reminders.second });
         }
 
         resolve(createdEventID);
@@ -426,6 +486,45 @@ Calendar.createEvent = function(arg) {
     }
   });
 };
+
+Calendar.addReminder = function(arg) {
+  return new Promise(function(resolve, reject) {
+    try {
+      if (!arg.eventId) {
+        reject("eventId is mandatory");
+        return;
+      }
+      if (!arg.minutes) {
+        reject("minutes is mandatory");
+        return;
+      }
+
+      var onPermissionGranted = function() {
+        var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+        var reminderContentValues = new android.content.ContentValues();
+        reminderContentValues.put("event_id", arg.eventId);
+        reminderContentValues.put("minutes", new java.lang.Long(arg.minutes));
+        reminderContentValues.put("method", new java.lang.Integer(1));
+        var reminderUri = android.net.Uri.parse("content://com.android.calendar/reminders");
+        var uri  = ContentResolver.insert(reminderUri, reminderContentValues);
+        var createdReminderID = uri.getLastPathSegment();
+        console.log("---- created reminder with id: " + createdReminderID);
+
+        resolve(createdReminderID);
+      }
+      
+      if (!Calendar._hasWritePermission()) {
+        Calendar._requestWritePermission(onPermissionGranted, reject);
+        return;
+      }
+
+      onPermissionGranted();
+    } catch (ex) {
+      console.log("Error in Calendar.addReminder: " + ex);
+      reject(ex);
+    }
+  });
+}
 
 Calendar.deleteCalendar = function(arg) {
   return new Promise(function (resolve, reject) {
