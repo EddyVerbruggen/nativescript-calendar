@@ -135,12 +135,17 @@ declare module "nativescript-calendar" {
         eventId: string;
       }
 
+      export interface AddReminderOptions {
+        eventId: string;
+        minutes: number;
+      }
+
       export interface FindEventsOptions extends FindOrDeleteEventsOptions {
       }
   
       export interface DeleteEventsOptions extends FindOrDeleteEventsOptions {
       }
-  
+
       export interface DeleteCalendarOptions {
         name: string;
       }
@@ -184,6 +189,7 @@ declare module "nativescript-calendar" {
       }
 
       export interface Reminder {
+        _id: string;
         eventId: string;
         minutes: number;
         method: string;
@@ -203,7 +209,12 @@ declare module "nativescript-calendar" {
        * Find reminders for event by eventId.
        */
       export function findReminders(options: FindRemindersOptions): Promise<Reminder[]>;
-  
+      
+      /**
+       * Returns the ID of the reminder that was created.
+       */
+      export function addReminder(options: AddReminderOptions): Promise<string>;
+
       /**
        * Usage is the same as findEvents, but the result is a bit different ;)
        * Returns an array of deleted event ID's.
