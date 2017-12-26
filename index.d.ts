@@ -150,6 +150,7 @@ declare module "nativescript-calendar" {
       id: string;
       title: string;
       location: string;
+      notes: string;
       url: string;
       startDate: Date;
       endDate: Date;
