@@ -113,10 +113,11 @@ Calendar.requestPermission = function () {
   });
 };
 
-Calendar._findCalendars = function (filterByName) {
+Calendar._findCalendars = filterByName => {
   const projection = [
     "_id",
-    "name"
+    "name",
+    "calendar_displayName"
   ];
 
   let sortOrder = null;
@@ -137,10 +138,12 @@ Calendar._findCalendars = function (filterByName) {
   if (cursor.moveToFirst()) {
     do {
       const name = cursor.getString(1);
+      const calendar_display_name = cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME));
       if (!filterByName || name === filterByName) {
         calendars.push({
           id: cursor.getLong(0),
-          name: name
+          name: name,
+          displayName: calendar_display_name
         });
       }
     } while (cursor.moveToNext());

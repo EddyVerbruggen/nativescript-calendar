@@ -61,7 +61,7 @@ Calendar.requestPermission = function (arg) {
   });
 };
 
-Calendar._findCalendars = filterByName => {
+Calendar._findCalendars = (filterByName: string): Array<EKCalendar> => {
   const calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
   const result = [];
   for (let i = 0, j = calendars.count; i < j; i++) {
@@ -126,12 +126,13 @@ Calendar.listCalendars = function (arg) {
     try {
       const onPermissionGranted = function () {
         const result = [];
-        const ekCalendars = Calendar._findCalendars();
+        const ekCalendars: Array<EKCalendar> = Calendar._findCalendars();
         for (let c in ekCalendars) {
           const ekCalendar = ekCalendars[c];
           result.push({
             id: ekCalendar.calendarIdentifier,
-            name: ekCalendar.title
+            name: ekCalendar.title,
+            displayName: ekCalendar.title
           });
         }
         resolve(result);
@@ -202,7 +203,7 @@ Calendar.findEvents = function (arg) {
             return;
           }
         } else {
-          const cals = Calendar._findCalendars(settings.calendar.name);
+          const cals: Array<EKCalendar> = Calendar._findCalendars(settings.calendar.name);
           let calendar;
           if (cals.length > 0) {
             calendar = cals[0];
@@ -282,7 +283,7 @@ Calendar.createEvent = function (arg) {
             return;
           }
         } else {
-          const cals = Calendar._findCalendars(settings.calendar.name);
+          const cals: Array<EKCalendar> = Calendar._findCalendars(settings.calendar.name);
           if (cals.length > 0) {
             calendar = cals[0];
           }
