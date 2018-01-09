@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.2.3](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.3) (2018-01-09)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.2...1.2.3)
+
+**Fixed bugs:**
+
+- App crash when denying permissions [\#33](https://github.com/EddyVerbruggen/nativescript-calendar/issues/33)
+
+
 ## [1.2.2](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.2) (2017-05-05)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.1...1.2.2)
 

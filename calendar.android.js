@@ -3,6 +3,8 @@ var utils = require("utils/utils");
 var Color = require("color").Color;
 var Calendar = require("./calendar-common");
 
+var PERMISSION_REQUEST_CODE = 2222;
+
 Calendar._fields = {
   EVENT_ID: android.provider.CalendarContract.Instances.EVENT_ID,
   CALENDAR: {
@@ -22,6 +24,9 @@ Calendar._fields = {
 
 (function () {
   application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, function (args) {
+    if (args.requestCode !== PERMISSION_REQUEST_CODE) {
+      return;
+    }
     for (var i = 0; i < args.permissions.length; i++) {
       if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
         Calendar._reject("Please allow access to the Calendar and try again.");
@@ -65,7 +70,7 @@ Calendar._requestPermission = function(permissions, onPermissionGranted, reject)
   android.support.v4.app.ActivityCompat.requestPermissions(
       application.android.foregroundActivity,
       permissions,
-      123 // irrelevant since we simply invoke onPermissionGranted
+      PERMISSION_REQUEST_CODE
   );
 };
 
