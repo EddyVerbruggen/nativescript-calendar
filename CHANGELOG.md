@@ -1,7 +1,7 @@
 # Change Log
 
-## [2.0.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/2.0.0) (2018-01-11)
-[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.3...2.0.0)
+## [1.3.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.0) (2018-01-09)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.3...1.3.0)
 
 **Implemented enhancements:**
 
