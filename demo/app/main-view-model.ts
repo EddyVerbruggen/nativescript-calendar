@@ -1,7 +1,7 @@
 import { Observable } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs/dialogs";
 
-const Calendar = require("nativescript-calendar");
+import * as Calendar from "nativescript-calendar";
 
 export class DemoAppModel extends Observable {
   doCheckHasPermission(): void {

@@ -31,7 +31,7 @@ export const Calendar: any = {
       }
     }
     for (let i in obj2) { // add the remaining properties from object 2
-      if (i in result) { //conflict
+      if (i in result) { // conflict
         continue;
       }
       result[i] = obj2[i];

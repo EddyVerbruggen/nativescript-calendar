@@ -42,12 +42,12 @@ Calendar._fields = {
     if (Calendar._onPermissionGranted) {
       Calendar._onPermissionGranted();
     } else {
-      console.log("No after-permission callback function specified for requestCode " + args.requestCode + ". That's a bug in the nativescript-calendar plugin, please report it!")
+      console.log("No after-permission callback function specified for requestCode " + args.requestCode + ". That's a bug in the nativescript-calendar plugin, please report it!");
     }
   });
 })();
 
-Calendar._hasPermission = function(perms) {
+Calendar._hasPermission = function (perms) {
   if (android.os.Build.VERSION.SDK_INT < 23) { // Android M. (6.0)
     return true;
   }
@@ -61,15 +61,15 @@ Calendar._hasPermission = function(perms) {
   return true;
 };
 
-Calendar._hasReadPermission = function() {
+Calendar._hasReadPermission = function () {
   return Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR]);
 };
 
-Calendar._hasWritePermission = function() {
+Calendar._hasWritePermission = function () {
   return Calendar._hasPermission([android.Manifest.permission.WRITE_CALENDAR]);
 };
 
-Calendar._requestPermission = function(permissions, onPermissionGranted, reject) {
+Calendar._requestPermission = function (permissions, onPermissionGranted, reject) {
   Calendar._onPermissionGranted = onPermissionGranted;
   Calendar._reject = reject;
   android.support.v4.app.ActivityCompat.requestPermissions(
@@ -79,15 +79,15 @@ Calendar._requestPermission = function(permissions, onPermissionGranted, reject)
   );
 };
 
-Calendar._requestReadPermission = function(onPermissionGranted, reject) {
+Calendar._requestReadPermission = function (onPermissionGranted, reject) {
   Calendar._requestPermission([android.Manifest.permission.READ_CALENDAR], onPermissionGranted, reject);
 };
 
-Calendar._requestWritePermission = function(onPermissionGranted, reject) {
+Calendar._requestWritePermission = function (onPermissionGranted, reject) {
   Calendar._requestPermission([android.Manifest.permission.WRITE_CALENDAR], onPermissionGranted, reject);
 };
 
-Calendar.hasPermission = function(arg) {
+Calendar.hasPermission = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       resolve(Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR]));
@@ -98,7 +98,7 @@ Calendar.hasPermission = function(arg) {
   });
 };
 
-Calendar.requestPermission = function() {
+Calendar.requestPermission = function () {
   return new Promise(function (resolve, reject) {
     try {
       Calendar._requestPermission(
@@ -114,45 +114,44 @@ Calendar.requestPermission = function() {
 };
 
 Calendar._findCalendars = function (filterByName) {
-  var projection = [
+  const projection = [
     "_id",
     "name"
   ];
 
-  var sortOrder = null;
-  var selections = null;
-  var selection = "visible=1";
+  let sortOrder = null;
+  let selections = null;
+  let selection = "visible=1";
 
-  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
-  var uriBuilder = android.provider.CalendarContract.Calendars.CONTENT_URI.buildUpon();
-  var uri = uriBuilder.build();
-  var cursor = contentResolver.query(
+  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const uriBuilder = android.provider.CalendarContract.Calendars.CONTENT_URI.buildUpon();
+  const uri = uriBuilder.build();
+  let cursor = contentResolver.query(
       uri,
       projection,
       selection,
       selections,
       sortOrder);
 
-  var calendars = [];
+  const calendars = [];
   if (cursor.moveToFirst()) {
     do {
-      var name = cursor.getString(1);
-      if (!filterByName || name == filterByName) {
-        var calendar = {
+      const name = cursor.getString(1);
+      if (!filterByName || name === filterByName) {
+        calendars.push({
           id: cursor.getLong(0),
           name: name
-        };
-        calendars.push(calendar);
+        });
       }
     } while (cursor.moveToNext());
   }
   return calendars;
 };
 
-Calendar._findEvents = function(arg) {
-  var settings = Calendar.merge(arg, Calendar.defaults);
+Calendar._findEvents = function (arg) {
+  const settings = Calendar.merge(arg, Calendar.defaults);
 
-  var projection = [
+  const projection = [
     Calendar._fields.EVENT_ID,
     Calendar._fields.CALENDAR.ID,
     Calendar._fields.CALENDAR.NAME,
@@ -167,9 +166,9 @@ Calendar._findEvents = function(arg) {
     Calendar._fields.END
   ];
 
-  var sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
-  var selection = "";
-  var selections = [];
+  const sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
+  let selection = "";
+  let selections = [];
 
   if (settings.id !== undefined) {
     selection += Calendar._fields.EVENT_ID + " = ?";
@@ -189,29 +188,29 @@ Calendar._findEvents = function(arg) {
     }
   }
 
-  var uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
+  const uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
   android.content.ContentUris.appendId(uriBuilder, settings.startDate.getTime());
   android.content.ContentUris.appendId(uriBuilder, settings.endDate.getTime());
-  var contentResolver = utils.ad.getApplicationContext().getContentResolver();
-  var uri = uriBuilder.build();
-  var cursor = contentResolver.query(
+  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const uri = uriBuilder.build();
+  const cursor = contentResolver.query(
       uri,
       projection,
       selection,
       selections,
       sortOrder);
 
-  var events = [];
+  const events = [];
   if (cursor.moveToFirst()) {
     do {
-      var event = {
+      const event = {
         id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
         location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
         startDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.STARTDATE))),
         endDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
-        allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) == 1,
+        allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) === 1,
         calendar: {
           id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
           name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
@@ -226,10 +225,10 @@ Calendar._findEvents = function(arg) {
   return events;
 };
 
-Calendar.listCalendars = function(arg) {
+Calendar.listCalendars = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var onPermissionGranted = function() {
+      const onPermissionGranted = function () {
         resolve(Calendar._findCalendars());
       };
 
@@ -246,7 +245,7 @@ Calendar.listCalendars = function(arg) {
   });
 };
 
-Calendar.findEvents = function(arg) {
+Calendar.findEvents = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       if (!arg.startDate || !arg.endDate) {
@@ -254,7 +253,7 @@ Calendar.findEvents = function(arg) {
         return;
       }
 
-      var onPermissionGranted = function() {
+      const onPermissionGranted = function () {
         resolve(Calendar._findEvents(arg));
       };
 
@@ -271,7 +270,7 @@ Calendar.findEvents = function(arg) {
   });
 };
 
-Calendar.deleteEvents = function(arg) {
+Calendar.deleteEvents = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       if (!arg.startDate || !arg.endDate) {
@@ -279,14 +278,14 @@ Calendar.deleteEvents = function(arg) {
         return;
       }
 
-      var onPermissionGranted = function() {
-        var events = Calendar._findEvents(arg);
-        var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
-        var deletedEventIds = [];
-        for (var e in events) {
-          var event = events[e];
-          var uri = android.provider.CalendarContract.Events.CONTENT_URI;
-          var eventUri = android.content.ContentUris.withAppendedId(uri, event.id);
+      const onPermissionGranted = function () {
+        const events = Calendar._findEvents(arg);
+        const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+        const deletedEventIds = [];
+        for (let e in events) {
+          const event = events[e];
+          const uri = android.provider.CalendarContract.Events.CONTENT_URI;
+          const eventUri = android.content.ContentUris.withAppendedId(uri, event.id);
           ContentResolver.delete(eventUri, null, null);
           deletedEventIds.push(event.id);
         }
@@ -308,10 +307,10 @@ Calendar.deleteEvents = function(arg) {
   });
 };
 
-Calendar.createEvent = function(arg) {
+Calendar.createEvent = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var settings = Calendar.merge(arg, Calendar.defaults);
+      const settings = Calendar.merge(arg, Calendar.defaults);
       if (!settings.startDate || !settings.endDate) {
         reject("startDate and endDate are mandatory");
         return;
@@ -320,9 +319,9 @@ Calendar.createEvent = function(arg) {
         settings.reminders = null;
       }
 
-      var onPermissionGranted = function() {
-        var ContentValues = new android.content.ContentValues();
-        var Events = android.provider.CalendarContract.Events;
+      const onPermissionGranted = function () {
+        const ContentValues = new android.content.ContentValues();
+        const Events = android.provider.CalendarContract.Events;
         ContentValues.put(Calendar._fields.TIMEZONE, java.util.TimeZone.getDefault().getID());
         ContentValues.put(Calendar._fields.STARTDATE, new java.lang.Long(settings.startDate.getTime()));
         ContentValues.put(Calendar._fields.ENDDATE, new java.lang.Long(settings.endDate.getTime()));
@@ -331,7 +330,7 @@ Calendar.createEvent = function(arg) {
         ContentValues.put(Calendar._fields.LOCATION, settings.location);
 
         // there's no separate url field, so adding it to the notes
-        var description = settings.notes;
+        let description = settings.notes;
         if (settings.url) {
           if (settings.notes) {
             description += " " + settings.url;
@@ -340,25 +339,25 @@ Calendar.createEvent = function(arg) {
           }
         }
         ContentValues.put(Calendar._fields.MESSAGE, description);
-        var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+        const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
         ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders && (settings.reminders.first || settings.reminders.second) ? 1 : 0));
-        var calendarId = null;
+        let calendarId = null;
         if (settings.calendar.name !== null) {
-          var calendars = Calendar._findCalendars(settings.calendar.name);
+          const calendars = Calendar._findCalendars(settings.calendar.name);
           if (calendars.length > 0) {
             calendarId = calendars[0].id;
           } else {
             // create it
-            var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
-            var calendarContentValues = new android.content.ContentValues();
-            var accountName = settings.calendar.accountName || settings.calendar.name;
+            let calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
+            const calendarContentValues = new android.content.ContentValues();
+            const accountName = settings.calendar.accountName || settings.calendar.name;
             calendarContentValues.put("account_name", accountName);
             calendarContentValues.put("account_type", "LOCAL");
             calendarContentValues.put("name", settings.calendar.name);
             calendarContentValues.put("calendar_displayName", settings.calendar.name);
             calendarContentValues.put("calendar_access_level", new java.lang.Integer(700)); // "owner"
             if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
-              var androidColor = new Color(settings.calendar.color).android;
+              let androidColor = new Color(settings.calendar.color).android;
               calendarContentValues.put("calendar_color", new java.lang.Integer(androidColor));
             }
             calendarContentValues.put("visible", new java.lang.Integer(1));
@@ -371,7 +370,7 @@ Calendar.createEvent = function(arg) {
                 .build();
             ContentResolver.insert(calUri, calendarContentValues);
             // retrieve the calendar we've' just created
-            var cals = Calendar._findCalendars(settings.calendar.name);
+            const cals = Calendar._findCalendars(settings.calendar.name);
             if (cals.length > 0) {
               calendarId = cals[0].id;
             }
@@ -387,36 +386,34 @@ Calendar.createEvent = function(arg) {
           if (settings.recurrence.endDate === null) {
             ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval);
           } else {
-            var endDate = arg.recurrence.endDate;
-            var yyyy = endDate.getFullYear().toString();
-            var mm = (endDate.getMonth()+1).toString();
-            var dd  = endDate.getDate().toString();
-            var yyyymmdd = yyyy + (mm[1]?mm:"0"+mm[0]) + (dd[1]?dd:"0"+dd[0]);
+            const endDate = arg.recurrence.endDate;
+            const yyyy = endDate.getFullYear().toString();
+            const mm = (endDate.getMonth() + 1).toString();
+            const dd = endDate.getDate().toString();
+            const yyyymmdd = yyyy + (mm[1] ? mm : "0" + mm[0]) + (dd[1] ? dd : "0" + dd[0]);
             ContentValues.put(Calendar._fields.RRULE, "FREQ=" + settings.recurrence.frequency.toUpperCase() + ";INTERVAL=" + settings.recurrence.interval + ";UNTIL=" + yyyymmdd);
           }
         }
 
-        var eventsUri = android.net.Uri.parse("content://com.android.calendar/events");
-        var uri = ContentResolver.insert(eventsUri, ContentValues);
-        var createdEventID = uri.getLastPathSegment();
-        console.log("---- created event with id: " + createdEventID);
+        const eventsUri = android.net.Uri.parse("content://com.android.calendar/events");
+        const uri = ContentResolver.insert(eventsUri, ContentValues);
+        const createdEventID = uri.getLastPathSegment();
 
         // now add reminders, if any
         if (settings.reminders && settings.reminders.first) {
-          var firstReminderContentValues = new android.content.ContentValues();
+          const firstReminderContentValues = new android.content.ContentValues();
           firstReminderContentValues.put("event_id", createdEventID);
           firstReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.first));
           firstReminderContentValues.put("method", new java.lang.Integer(1));
           ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), firstReminderContentValues);
         }
         if (settings.reminders && settings.reminders.second) {
-          var secondReminderContentValues = new android.content.ContentValues();
+          const secondReminderContentValues = new android.content.ContentValues();
           secondReminderContentValues.put("event_id", createdEventID);
           secondReminderContentValues.put("minutes", new java.lang.Long(settings.reminders.second));
           secondReminderContentValues.put("method", new java.lang.Integer(1));
           ContentResolver.insert(android.net.Uri.parse("content://com.android.calendar/reminders"), secondReminderContentValues);
         }
-
         resolve(createdEventID);
       };
 
@@ -435,7 +432,7 @@ Calendar.createEvent = function(arg) {
   });
 };
 
-Calendar.deleteCalendar = function(arg) {
+Calendar.deleteCalendar = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
       if (!arg.name) {
@@ -443,18 +440,18 @@ Calendar.deleteCalendar = function(arg) {
         return;
       }
 
-      var onPermissionGranted = function() {
-        var calendars = Calendar._findCalendars(arg.name);
-        var deletedCalId = null;
+      const onPermissionGranted = function () {
+        const calendars = Calendar._findCalendars(arg.name);
+        let deletedCalId = null;
 
         if (calendars.length > 0) {
-          var calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
-          var ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+          const calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
+          const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
 
           // syntactically this is a loop but there's most likely only 1 item
-          for (var c in calendars) {
-            var calendar = calendars[c];
-            var deleteUri = android.content.ContentUris.withAppendedId(calUri, calendar.id);
+          for (let c in calendars) {
+            const calendar = calendars[c];
+            const deleteUri = android.content.ContentUris.withAppendedId(calUri, calendar.id);
             ContentResolver.delete(deleteUri, null, null);
             deletedCalId = calendar.id;
           }

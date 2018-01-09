@@ -3,14 +3,14 @@ import { Calendar } from "./calendar-common";
 
 Calendar._eventStore = null;
 
-Calendar._getRecurrenceFrequency = function (frequency) {
-  if (frequency == Calendar.RecurrenceFrequency.DAILY) {
+Calendar._getRecurrenceFrequency = frequency => {
+  if (frequency === Calendar.RecurrenceFrequency.DAILY) {
     return EKRecurrenceFrequency.Daily;
-  } else if (frequency == Calendar.RecurrenceFrequency.WEEKLY) {
+  } else if (frequency === Calendar.RecurrenceFrequency.WEEKLY) {
     return EKRecurrenceFrequency.Weekly;
-  } else if (frequency == Calendar.RecurrenceFrequency.MONTHLY) {
+  } else if (frequency === Calendar.RecurrenceFrequency.MONTHLY) {
     return EKRecurrenceFrequency.Monthly;
-  } else if (frequency == Calendar.RecurrenceFrequency.YEARLY) {
+  } else if (frequency === Calendar.RecurrenceFrequency.YEARLY) {
     return EKRecurrenceFrequency.Yearly;
   } else {
     return null;
@@ -36,8 +36,7 @@ Calendar._invokeFunctionOnEventStore = function (onInitComplete, reject) {
 };
 
 Calendar._hasPermission = function () {
-  const authStatus = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event);
-  return authStatus == EKAuthorizationStatus.Authorized;
+  return EKAuthorizationStatus.Authorized === EKEventStore.authorizationStatusForEntityType(EKEntityType.Event);
 };
 
 Calendar.hasPermission = function (arg) {
@@ -62,12 +61,12 @@ Calendar.requestPermission = function (arg) {
   });
 };
 
-Calendar._findCalendars = function (filterByName) {
-  var calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
-  var result = [];
-  for (var i = 0, j = calendars.count; i < j; i++) {
-    var calendar = calendars.objectAtIndex(i);
-    if (!filterByName || filterByName == calendar.title) {
+Calendar._findCalendars = filterByName => {
+  const calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
+  const result = [];
+  for (let i = 0, j = calendars.count; i < j; i++) {
+    const calendar = calendars.objectAtIndex(i);
+    if (!filterByName || filterByName === calendar.title) {
       result.push(calendar);
     }
   }
@@ -75,14 +74,14 @@ Calendar._findCalendars = function (filterByName) {
 };
 
 Calendar._findEKEvents = function (arg, calendars) {
-  var datedEvents = Calendar._eventStore.eventsMatchingPredicate(
+  const datedEvents = Calendar._eventStore.eventsMatchingPredicate(
       Calendar._eventStore.predicateForEventsWithStartDateEndDateCalendars(arg.startDate, arg.endDate, calendars));
 
   if (datedEvents === null) {
     return null;
   }
 
-  var predicates = [];
+  const predicates = [];
   if (arg.title !== undefined) {
     predicates.push("title contains[c] '" + arg.title.replace(/'/g, "\\'") + "'");
   }
@@ -94,7 +93,7 @@ Calendar._findEKEvents = function (arg, calendars) {
   }
 
   if (predicates.length > 0) {
-    var predicate = predicates.join(' AND ');
+    const predicate = predicates.join(' AND ');
     return datedEvents.filteredArrayUsingPredicate(NSPredicate.predicateWithFormatArgumentArray(predicate, null));
   } else {
     return datedEvents;
@@ -103,19 +102,19 @@ Calendar._findEKEvents = function (arg, calendars) {
 
 Calendar._findEKSource = function () {
   // if iCloud is on, it hides the local calendars, so check for iCloud first
-  var eKSource,
+  let eKSource,
       eKSources = Calendar._eventStore.sources;
-  for (var i = 0, j = eKSources.count; i < j; i++) {
+  for (let i = 0, j = eKSources.count; i < j; i++) {
     eKSource = eKSources.objectAtIndex(i);
-    if (eKSource.sourceType == EKSourceType.CalDAV && eKSource.title == "iCloud") {
+    if (eKSource.sourceType === EKSourceType.CalDAV && eKSource.title === "iCloud") {
       return eKSource;
     }
   }
 
   // ok, not found.. so it's a local calendar
-  for (var k = 0, l = eKSources.count; k < l; k++) {
+  for (let k = 0, l = eKSources.count; k < l; k++) {
     eKSource = eKSources.objectAtIndex(k);
-    if (eKSource.sourceType == EKSourceType.Local) {
+    if (eKSource.sourceType === EKSourceType.Local) {
       return eKSource;
     }
   }
@@ -125,11 +124,11 @@ Calendar._findEKSource = function () {
 Calendar.listCalendars = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var onPermissionGranted = function() {
-        var result = [];
-        var ekCalendars = Calendar._findCalendars();
-        for (var c in ekCalendars) {
-          var ekCalendar = ekCalendars[c];
+      const onPermissionGranted = function () {
+        const result = [];
+        const ekCalendars = Calendar._findCalendars();
+        for (let c in ekCalendars) {
+          const ekCalendar = ekCalendars[c];
           result.push({
             id: ekCalendar.calendarIdentifier,
             name: ekCalendar.title
@@ -147,16 +146,16 @@ Calendar.listCalendars = function (arg) {
 };
 
 Calendar._ekEventToJSEvent = function (ekEvent) {
-  var calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
-  var attendeeTypes = ["Unknown", "Person", "Room", "Resource", "Group"];
-  var attendeeRoles = ["Unknown", "Required", "Optional", "Chair", "Non Participant"];
-  var attendeeStatuses = ["Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"];
+  const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
+  const attendeeTypes = ["Unknown", "Person", "Room", "Resource", "Group"];
+  const attendeeRoles = ["Unknown", "Required", "Optional", "Chair", "Non Participant"];
+  const attendeeStatuses = ["Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"];
 
-  var ekCalendar = ekEvent.calendar;
-  var attendees = [];
+  const ekCalendar = ekEvent.calendar;
+  const attendees = [];
   if (ekEvent.attendees !== null) {
-    for (var k = 0, l = ekEvent.attendees.count; k < l; k++) {
-      var ekParticipant = ekEvent.attendees.objectAtIndex(k);
+    for (let k = 0, l = ekEvent.attendees.count; k < l; k++) {
+      const ekParticipant = ekEvent.attendees.objectAtIndex(k);
       attendees.push({
         name: ekParticipant.name,
         url: ekParticipant.URL,
@@ -188,14 +187,14 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
 Calendar.findEvents = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var settings = Calendar.merge(arg, Calendar.defaults);
+      const settings = Calendar.merge(arg, Calendar.defaults);
       if (!settings.startDate || !settings.endDate) {
         reject("startDate and endDate are mandatory");
         return;
       }
 
-      var onPermissionGranted = function() {
-        var calendars;
+      const onPermissionGranted = function () {
+        let calendars;
         if (settings.calendar.name === null) {
           calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
           if (calendars.count === 0) {
@@ -203,8 +202,8 @@ Calendar.findEvents = function (arg) {
             return;
           }
         } else {
-          var cals = Calendar._findCalendars(settings.calendar.name);
-          var calendar;
+          const cals = Calendar._findCalendars(settings.calendar.name);
+          let calendar;
           if (cals.length > 0) {
             calendar = cals[0];
           }
@@ -218,7 +217,7 @@ Calendar.findEvents = function (arg) {
 
         // first try to match by id
         if (settings.id !== null) {
-          var eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
+          const eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
           if (eKCalendarItem !== null) {
             resolve([Calendar._ekEventToJSEvent(eKCalendarItem)]);
             return;
@@ -226,10 +225,10 @@ Calendar.findEvents = function (arg) {
         }
 
         // if that's not set or resolved, try other properties
-        var events = [];
-        var matchingEvents = Calendar._findEKEvents(settings, calendars);
+        const events = [];
+        const matchingEvents = Calendar._findEKEvents(settings, calendars);
         if (matchingEvents !== null) {
-          for (var i = 0, j = matchingEvents.count; i < j; i++) {
+          for (let i = 0, j = matchingEvents.count; i < j; i++) {
             events.push(Calendar._ekEventToJSEvent(matchingEvents.objectAtIndex(i)));
           }
         }
@@ -247,7 +246,7 @@ Calendar.findEvents = function (arg) {
 Calendar.createEvent = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var settings = Calendar.merge(arg, Calendar.defaults);
+      const settings = Calendar.merge(arg, Calendar.defaults);
       if (!settings.startDate || !settings.endDate) {
         reject("startDate and endDate are mandatory");
         return;
@@ -256,8 +255,8 @@ Calendar.createEvent = function (arg) {
         settings.reminders = null;
       }
 
-      var onPermissionGranted = function() {
-        var eKEvent = EKEvent.eventWithEventStore(Calendar._eventStore);
+      const onPermissionGranted = function () {
+        const eKEvent = EKEvent.eventWithEventStore(Calendar._eventStore);
 
         eKEvent.title = settings.title;
         eKEvent.location = settings.location;
@@ -269,13 +268,13 @@ Calendar.createEvent = function (arg) {
           eKEvent.URL = NSURL.URLWithString(settings.url);
         }
 
-        var duration = settings.endDate.getTime() - settings.startDate.getTime();
-        var moduloDay = duration % (1000 * 60 * 60 * 24);
+        const duration = settings.endDate.getTime() - settings.startDate.getTime();
+        const moduloDay = duration % (1000 * 60 * 60 * 24);
         if (moduloDay === 0) {
           eKEvent.allDay = true;
         }
 
-        var calendar = null;
+        let calendar = null;
         if (settings.calendar.name === null) {
           calendar = Calendar._eventStore.defaultCalendarForNewEvents;
           if (calendar === null) {
@@ -283,7 +282,7 @@ Calendar.createEvent = function (arg) {
             return;
           }
         } else {
-          var cals = Calendar._findCalendars(settings.calendar.name);
+          const cals = Calendar._findCalendars(settings.calendar.name);
           if (cals.length > 0) {
             calendar = cals[0];
           }
@@ -292,8 +291,7 @@ Calendar.createEvent = function (arg) {
             calendar = EKCalendar.calendarForEntityTypeEventStore(EKEntityType.Event, Calendar._eventStore);
             calendar.title = settings.calendar.name;
             if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
-              var iosColor = new Color(settings.calendar.color).ios;
-              calendar.CGColor = iosColor;
+              calendar.CGColor = new Color(settings.calendar.color).ios;
             }
             calendar.source = Calendar._findEKSource();
             Calendar._eventStore.saveCalendarCommitError(calendar, true, null);
@@ -309,18 +307,17 @@ Calendar.createEvent = function (arg) {
         }
 
         if (settings.recurrence.frequency !== null) {
-          var frequency = Calendar._getRecurrenceFrequency(settings.recurrence.frequency);
-          var eKRecurrenceRule = EKRecurrenceRule.alloc().initRecurrenceWithFrequencyIntervalEnd(frequency, settings.recurrence.interval, null);
+          const frequency = Calendar._getRecurrenceFrequency(settings.recurrence.frequency);
+          const eKRecurrenceRule = EKRecurrenceRule.alloc().initRecurrenceWithFrequencyIntervalEnd(frequency, settings.recurrence.interval, null);
           if (arg.recurrence.endDate !== null) {
             eKRecurrenceRule.recurrenceEnd = EKRecurrenceEnd.recurrenceEndWithEndDate(arg.recurrence.endDate);
           }
           eKEvent.addRecurrenceRule(eKRecurrenceRule);
         }
 
-        var error = null;
+        let error = null;
         Calendar._eventStore.saveEventSpanError(eKEvent, "EKSpanThisEvent", error);
         if (error === null) {
-          console.log("---- created event with id: " + eKEvent.calendarItemIdentifier);
           resolve(eKEvent.calendarItemIdentifier);
         } else {
           reject(error);
@@ -338,14 +335,14 @@ Calendar.createEvent = function (arg) {
 Calendar.deleteEvents = function (arg) {
   return new Promise(function (resolve, reject) {
     try {
-      var settings = Calendar.merge(arg, Calendar.defaults);
+      const settings = Calendar.merge(arg, Calendar.defaults);
       if (!settings.startDate || !settings.endDate) {
         reject("startDate and endDate are mandatory");
         return;
       }
 
-      var onPermissionGranted = function() {
-        var calendars;
+      const onPermissionGranted = function () {
+        let calendars;
         if (settings.calendar.name === null) {
           calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
           if (calendars.count === 0) {
@@ -353,8 +350,8 @@ Calendar.deleteEvents = function (arg) {
             return;
           }
         } else {
-          var cals = Calendar._findCalendars(settings.calendar.name);
-          var calendar;
+          const cals = Calendar._findCalendars(settings.calendar.name);
+          let calendar;
           if (cals.length > 0) {
             calendar = cals[0];
           }
@@ -367,7 +364,7 @@ Calendar.deleteEvents = function (arg) {
         }
 
         if (settings.id !== null) {
-          var eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
+          const eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
           if (eKCalendarItem !== null) {
             Calendar._eventStore.removeEventSpanError(eKCalendarItem, EKSpan.ThisEvent, null);
             resolve([settings.id]);
@@ -378,11 +375,11 @@ Calendar.deleteEvents = function (arg) {
         }
 
         // if that's not set or resolved, try other properties
-        var matchingEvents = Calendar._findEKEvents(settings, calendars);
-        var deletedEventIds = [];
+        const matchingEvents = Calendar._findEKEvents(settings, calendars);
+        const deletedEventIds = [];
         if (matchingEvents !== null) {
-          for (var i = 0, j = matchingEvents.count; i < j; i++) {
-            var ekEvent = matchingEvents.objectAtIndex(i);
+          for (let i = 0, j = matchingEvents.count; i < j; i++) {
+            const ekEvent = matchingEvents.objectAtIndex(i);
             deletedEventIds.push(ekEvent.calendarItemIdentifier);
             // NOTE: you can delete this event AND future events by passing span:EKSpanFutureEvents
             Calendar._eventStore.removeEventSpanError(ekEvent, EKSpan.ThisEvent, null);
@@ -407,19 +404,18 @@ Calendar.deleteCalendar = function (arg) {
         return;
       }
 
-      var onPermissionGranted = function() {
-        var calendars = Calendar._findCalendars(arg.name);
-        var deletedCalId = null;
+      const onPermissionGranted = function () {
+        const calendars = Calendar._findCalendars(arg.name);
+        let deletedCalId = null;
 
         if (calendars.length > 0) {
           // syntactically this is a loop but there's most likely only 1 item
-          for (var c in calendars) {
-            var calendar = calendars[c];
+          for (let c in calendars) {
+            const calendar = calendars[c];
             Calendar._eventStore.removeCalendarCommitError(calendar, true, null);
             deletedCalId = calendar.calendarIdentifier;
           }
         }
-
         resolve(deletedCalId);
       };
 

@@ -19,12 +19,12 @@ declare module "nativescript-calendar" {
       /**
        * A valid JS Date representing the start date (and time of the event).
        * If you want an 'All day event', make sure you set the dates to midnight like this:
-       * 
+       *
        *    var d = new Date();
        *    d.setHours(0);
        *    d.setMinutes(0);
        *    d.setSeconds(0);
-       * 
+       *
        *    // then this will create an 'all day event' for tomorrow
        *    startDate = new Date(d.getTime() + (24*60*60*1000));
        *    endDate = new Date(d.getTime() + (2*24*60*60*1000));
