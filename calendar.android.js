@@ -16,6 +16,8 @@ Calendar._fields = {
   LOCATION: "eventLocation",
   STARTDATE: "dtstart",
   ENDDATE: "dtend",
+  BEGIN: "begin",
+  END: "end",
   ALLDAY: "allDay",
   TIMEZONE: "eventTimezone",
   HAS_ALARM: "hasAlarm",
@@ -156,7 +158,10 @@ Calendar._findEvents = function(arg) {
     Calendar._fields.LOCATION,
     Calendar._fields.STARTDATE,
     Calendar._fields.ENDDATE,
-    Calendar._fields.ALLDAY
+    Calendar._fields.ALLDAY,
+    Calendar._fields.RRULE,
+    Calendar._fields.BEGIN,
+    Calendar._fields.END
   ];
 
   var sortOrder = android.provider.CalendarContract.Instances.BEGIN + " ASC, " + android.provider.CalendarContract.Instances.END + " ASC";
@@ -207,7 +212,10 @@ Calendar._findEvents = function(arg) {
         calendar: {
           id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
           name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
-        }
+        },
+        recurringRule: cursor.getString(cursor.getColumnIndex(Calendar._fields.RRULE)),
+        instanceBeginDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.BEGIN))),
+        instanceEndDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.END)))
       };
       events.push(event);
     } while (cursor.moveToNext());
