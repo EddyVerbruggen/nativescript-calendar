@@ -1,9 +1,12 @@
 # NativeScript Calendar Plugin
 
+[![Build Status][build-status]][build-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
+[build-status]:https://travis-ci.org/EddyVerbruggen/nativescript-calendar.svg?branch=master
+[build-url]:https://travis-ci.org/EddyVerbruggen/nativescript-calendar
 [npm-image]:http://img.shields.io/npm/v/nativescript-calendar.svg
 [npm-url]:https://npmjs.org/package/nativescript-calendar
 [downloads-image]:http://img.shields.io/npm/dm/nativescript-calendar.svg

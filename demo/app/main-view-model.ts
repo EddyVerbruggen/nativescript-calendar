@@ -18,7 +18,7 @@ export class DemoAppModel extends Observable {
 
   doRequestPermission(): void {
     Calendar.requestPermission().then(() => console.log("Permission requested"));
-  };
+  }
 
   private createEvent(options): void {
     Calendar.createEvent(options).then(
@@ -30,7 +30,7 @@ export class DemoAppModel extends Observable {
           });
         },
         error => console.log("doCreateEvent error: " + error));
-  };
+  }
 
   doCreateEventWithReminders(): void {
     this.createEvent({
@@ -43,10 +43,10 @@ export class DemoAppModel extends Observable {
         first: 30,
         second: 10
       },
-      startDate: new Date(new Date().getTime() + (60*60*1000)),
-      endDate: new Date(new Date().getTime() + (2*60*60*1000))
+      startDate: new Date(new Date().getTime() + (60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (2 * 60 * 60 * 1000))
     });
-  };
+  }
 
   doCreateAllDayEvent(): void {
     const d = new Date();
@@ -61,10 +61,10 @@ export class DemoAppModel extends Observable {
       url: 'http://my.shoppinglist.com',
       reminders: null,
       // this will make this event an 'all day event' for tomorrow
-      startDate: new Date(d.getTime() + (24*60*60*1000)),
-      endDate: new Date(d.getTime() + (2*24*60*60*1000))
+      startDate: new Date(d.getTime() + (24 * 60 * 60 * 1000)),
+      endDate: new Date(d.getTime() + (2 * 24 * 60 * 60 * 1000))
     });
-  };
+  }
 
   doCreateRepeatingEvent(): void {
     this.createEvent({
@@ -76,12 +76,12 @@ export class DemoAppModel extends Observable {
       recurrence: {
         frequency: Calendar.RecurrenceFrequency.DAILY,
         interval: 2,
-        endDate: new Date(new Date().getTime() + (10*24*60*60*1000)) // 10 days
+        endDate: new Date(new Date().getTime() + (10 * 24 * 60 * 60 * 1000)) // 10 days
       },
-      startDate: new Date(new Date().getTime() + (60*60*1000)),
-      endDate: new Date(new Date().getTime() + (2*60*60*1000))
+      startDate: new Date(new Date().getTime() + (60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (2 * 60 * 60 * 1000))
     });
-  };
+  }
 
   doCreateEventInCustomCalendar(): void {
     this.createEvent({
@@ -94,18 +94,18 @@ export class DemoAppModel extends Observable {
         name: "NativeScript Cal"
       },
       // spans 2 hours, starting in 3 hours
-      startDate: new Date(new Date().getTime() + (3*60*60*1000)),
-      endDate: new Date(new Date().getTime() + (5*60*60*1000))
+      startDate: new Date(new Date().getTime() + (3 * 60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (5 * 60 * 60 * 1000))
     });
-  };
+  }
 
   doFindEventByTitle(): void {
     Calendar.findEvents({
       // any event containing this string will be returned
       title: 'groceries',
       // dates are mandatory, the event must be within this interval
-      startDate: new Date(new Date().getTime() - (7*24*60*60*1000)),
-      endDate: new Date(new Date().getTime() + (3*24*60*60*1000))
+      startDate: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (3 * 24 * 60 * 60 * 1000))
     }).then(
         events => {
           alert({
@@ -116,13 +116,13 @@ export class DemoAppModel extends Observable {
         },
         error => console.log("doFindEventByTitle error: " + error)
     );
-  };
+  }
 
   doFindAllEvents(): void {
     Calendar.findEvents({
       // dates are mandatory, the event must be within this interval
-      startDate: new Date(new Date().getTime() - (50*24*60*60*1000)),
-      endDate: new Date(new Date().getTime() + (50*24*60*60*1000))
+      startDate: new Date(new Date().getTime() - (50 * 24 * 60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (50 * 24 * 60 * 60 * 1000))
     }).then(
         events => {
           alert({
@@ -139,7 +139,7 @@ export class DemoAppModel extends Observable {
           });
         }
     );
-  };
+  }
 
   doListCalendars(): void {
     Calendar.listCalendars().then(
@@ -152,14 +152,14 @@ export class DemoAppModel extends Observable {
         },
         error => console.log("doListCalendars error: " + error)
     );
-  };
+  }
 
   doDeleteEvents(): void {
     Calendar.deleteEvents({
       // id: 'EF33E6DE-D36E-473B-A50B-FEFAEF700031',
       title: 'groceries',
-      startDate: new Date(new Date().getTime() - (7*24*60*60*1000)),
-      endDate: new Date(new Date().getTime() + (3*24*60*60*1000))
+      startDate: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)),
+      endDate: new Date(new Date().getTime() + (3 * 24 * 60 * 60 * 1000))
     }).then(
         deletedEventIds => {
           alert({
@@ -170,5 +170,5 @@ export class DemoAppModel extends Observable {
         },
         error => console.log("doFindEvents error: " + error)
     );
-  };
+  }
 }
