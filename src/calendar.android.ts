@@ -1,9 +1,12 @@
-var application = require("application");
-var utils = require("utils/utils");
-var Color = require("color").Color;
-var Calendar = require("./calendar-common");
+import * as application from "tns-core-modules/application";
+import * as utils from "tns-core-modules/utils/utils";
+import { Color } from "tns-core-modules/color";
+import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
+import { Calendar } from "./calendar-common";
 
-var PERMISSION_REQUEST_CODE = 2222;
+const PERMISSION_REQUEST_CODE = 2222;
+
+declare const android: any;
 
 Calendar._fields = {
   EVENT_ID: android.provider.CalendarContract.Instances.EVENT_ID,
@@ -25,11 +28,11 @@ Calendar._fields = {
 };
 
 (function () {
-  application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, function (args) {
+  application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, (args: AndroidActivityRequestPermissionsEventData) => {
     if (args.requestCode !== PERMISSION_REQUEST_CODE) {
       return;
     }
-    for (var i = 0; i < args.permissions.length; i++) {
+    for (let i = 0; i < args.permissions.length; i++) {
       if (args.grantResults[i] === android.content.pm.PackageManager.PERMISSION_DENIED) {
         Calendar._reject("Please allow access to the Calendar and try again.");
         return;
@@ -49,8 +52,8 @@ Calendar._hasPermission = function(perms) {
     return true;
   }
 
-  for (var p in perms) {
-    var permission = perms[p];
+  for (let p in perms) {
+    const permission = perms[p];
     if (android.content.pm.PackageManager.PERMISSION_GRANTED !== android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
       return false;
     }

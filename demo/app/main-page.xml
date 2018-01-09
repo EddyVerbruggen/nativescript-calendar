@@ -1,0 +1,45 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page">
+  <TabView>
+    <TabView.items>
+      <TabViewItem title="About">
+        <TabViewItem.view>
+          <ScrollView>
+            <StackLayout class="tab-content">
+              <Image margin="10" src="~/res/telerik-logo.png" />
+              <Label text="Calendar plugin demo" class="title"/>
+              <Label text="The Calendar plugin allows you to manipulate events in the user's calendar. You can find, create and delete events in either the default or a custom calendar." textWrap="true"/>
+            </StackLayout>
+          </ScrollView>
+        </TabViewItem.view>
+      </TabViewItem>
+      <TabViewItem title="Demo">
+        <TabViewItem.view>
+          <GridLayout columns="*,*" rows="auto, auto, auto, auto, auto, auto, auto, auto, auto" horizontalAlignment="center" class="tab-content">
+            <Label row="0" colSpan="2" text="You need permission before being able to access the Calendar. The plugin requests this when it's loaded, but you can always trigger these manually." class="subtitle" textWrap="true" />
+
+            <Button row="1" col="0" text="has permission?" tap="{{ doCheckHasPermission }}" class="button" />
+            <Button row="1" col="1" text="request perm." tap="{{ doRequestPermission }}" class="button" />
+
+            <Label row="2" colSpan="2" text="Creating events" class="subtitle" textWrap="true" />
+
+            <Button row="3" col="0" text="with reminders" tap="{{ doCreateEventWithReminders }}" class="button button-positive" />
+            <Button row="3" col="1" text="all day" tap="{{ doCreateAllDayEvent }}" class="button button-positive" />
+
+            <Button row="4" col="0" text="repeating" tap="{{ doCreateRepeatingEvent }}" class="button button-positive" />
+            <Button row="4" col="1" text="in custom calendar" tap="{{ doCreateEventInCustomCalendar }}" class="button button-positive" />
+
+            <Label row="5" colSpan="2" text="Finding events" class="subtitle" textWrap="true" />
+
+            <Button row="6" col="0" text="find by title" tap="{{ doFindEventByTitle }}" class="button" />
+            <Button row="6" col="1" text="find all events" tap="{{ doFindAllEvents }}" class="button" />
+
+            <Label row="7" colSpan="2" text="Other features" class="subtitle" textWrap="true" />
+
+            <Button row="8" col="0" text="list calendars" tap="{{ doListCalendars }}" class="button" />
+            <Button row="8" col="1" text="delete events" tap="{{ doDeleteEvents }}" class="button button-danger"/>
+          </GridLayout>
+        </TabViewItem.view>
+      </TabViewItem>
+    </TabView.items>
+  </TabView>
+</Page>

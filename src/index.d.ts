@@ -1,7 +1,13 @@
-/// <reference path="calendar-common.d.ts"/>
 declare module "nativescript-calendar" {
 
-    /**
+  export enum RecurrenceFrequency {
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY
+  }
+
+  /**
      * The options object passed into the createEvent function.
      */
     export interface CreateEventOptions {

@@ -1,18 +1,17 @@
-var Calendar = require("./calendar-common");
-var application = require("application");
-var Color = require("color").Color;
+import { Color } from "tns-core-modules/color";
+import { Calendar } from "./calendar-common";
 
 Calendar._eventStore = null;
 
 Calendar._getRecurrenceFrequency = function (frequency) {
   if (frequency == Calendar.RecurrenceFrequency.DAILY) {
-    return EKRecurrenceFrequencyDaily;
+    return EKRecurrenceFrequency.Daily;
   } else if (frequency == Calendar.RecurrenceFrequency.WEEKLY) {
-    return EKRecurrenceFrequencyWeekly;
+    return EKRecurrenceFrequency.Weekly;
   } else if (frequency == Calendar.RecurrenceFrequency.MONTHLY) {
-    return EKRecurrenceFrequencyMonthly;
+    return EKRecurrenceFrequency.Monthly;
   } else if (frequency == Calendar.RecurrenceFrequency.YEARLY) {
-    return EKRecurrenceFrequencyYearly;
+    return EKRecurrenceFrequency.Yearly;
   } else {
     return null;
   }
@@ -24,8 +23,8 @@ Calendar._invokeFunctionOnEventStore = function (onInitComplete, reject) {
     return;
   }
 
-  var eventStoreCandidate = EKEventStore.new();
-  eventStoreCandidate.requestAccessToEntityTypeCompletion(EKEntityTypeEvent, function (granted, error) {
+  const eventStoreCandidate = EKEventStore.new();
+  eventStoreCandidate.requestAccessToEntityTypeCompletion(EKEntityType.Event, function (granted, error) {
     if (granted) {
       Calendar._eventStore = eventStoreCandidate;
       onInitComplete();
@@ -37,8 +36,8 @@ Calendar._invokeFunctionOnEventStore = function (onInitComplete, reject) {
 };
 
 Calendar._hasPermission = function () {
-  var authStatus = EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent);
-  return authStatus == EKAuthorizationStatusAuthorized;
+  const authStatus = EKEventStore.authorizationStatusForEntityType(EKEntityType.Event);
+  return authStatus == EKAuthorizationStatus.Authorized;
 };
 
 Calendar.hasPermission = function (arg) {
@@ -64,7 +63,7 @@ Calendar.requestPermission = function (arg) {
 };
 
 Calendar._findCalendars = function (filterByName) {
-  var calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
+  var calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
   var result = [];
   for (var i = 0, j = calendars.count; i < j; i++) {
     var calendar = calendars.objectAtIndex(i);
@@ -108,7 +107,7 @@ Calendar._findEKSource = function () {
       eKSources = Calendar._eventStore.sources;
   for (var i = 0, j = eKSources.count; i < j; i++) {
     eKSource = eKSources.objectAtIndex(i);
-    if (eKSource.sourceType == EKSourceTypeCalDAV && eKSource.title == "iCloud") {
+    if (eKSource.sourceType == EKSourceType.CalDAV && eKSource.title == "iCloud") {
       return eKSource;
     }
   }
@@ -116,7 +115,7 @@ Calendar._findEKSource = function () {
   // ok, not found.. so it's a local calendar
   for (var k = 0, l = eKSources.count; k < l; k++) {
     eKSource = eKSources.objectAtIndex(k);
-    if (eKSource.sourceType == EKSourceTypeLocal) {
+    if (eKSource.sourceType == EKSourceType.Local) {
       return eKSource;
     }
   }
@@ -198,7 +197,7 @@ Calendar.findEvents = function (arg) {
       var onPermissionGranted = function() {
         var calendars;
         if (settings.calendar.name === null) {
-          calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
+          calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
           if (calendars.count === 0) {
             reject("No default calendar found. Is access to the Calendar blocked for this app?");
             return;
@@ -290,7 +289,7 @@ Calendar.createEvent = function (arg) {
           }
           if (calendar === null) {
             // create it
-            calendar = EKCalendar.calendarForEntityTypeEventStore(EKEntityTypeEvent, Calendar._eventStore);
+            calendar = EKCalendar.calendarForEntityTypeEventStore(EKEntityType.Event, Calendar._eventStore);
             calendar.title = settings.calendar.name;
             if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
               var iosColor = new Color(settings.calendar.color).ios;
@@ -348,7 +347,7 @@ Calendar.deleteEvents = function (arg) {
       var onPermissionGranted = function() {
         var calendars;
         if (settings.calendar.name === null) {
-          calendars = Calendar._eventStore.calendarsForEntityType(EKEntityTypeEvent);
+          calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
           if (calendars.count === 0) {
             reject("No default calendar found. Is access to the Calendar blocked for this app?");
             return;
@@ -370,7 +369,7 @@ Calendar.deleteEvents = function (arg) {
         if (settings.id !== null) {
           var eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
           if (eKCalendarItem !== null) {
-            Calendar._eventStore.removeEventSpanError(eKCalendarItem, EKSpanThisEvent, null);
+            Calendar._eventStore.removeEventSpanError(eKCalendarItem, EKSpan.ThisEvent, null);
             resolve([settings.id]);
           } else {
             resolve([]);
@@ -386,7 +385,7 @@ Calendar.deleteEvents = function (arg) {
             var ekEvent = matchingEvents.objectAtIndex(i);
             deletedEventIds.push(ekEvent.calendarItemIdentifier);
             // NOTE: you can delete this event AND future events by passing span:EKSpanFutureEvents
-            Calendar._eventStore.removeEventSpanError(ekEvent, EKSpanThisEvent, null);
+            Calendar._eventStore.removeEventSpanError(ekEvent, EKSpan.ThisEvent, null);
           }
         }
         resolve(deletedEventIds);

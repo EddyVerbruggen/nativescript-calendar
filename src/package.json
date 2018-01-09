@@ -1,0 +1,61 @@
+{
+  "name": "nativescript-calendar",
+  "version": "2.0.0",
+  "description": "Interact with the native calendar. Add, Update, Read, you name it.",
+  "main": "calendar",
+  "typings": "calendar.d.ts",
+  "nativescript": {
+    "platforms": {
+      "android": "2.0.0",
+      "ios": "2.0.0"
+    }
+  },
+  "scripts": {
+    "tsc": "tsc -skipLibCheck",
+    "build": "npm i && npm run tsc",
+    "postclone": "npm i && cd ../demo && npm i && cd ../src && npm run plugin.link",
+    "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
+    "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
+    "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\" --exclude \"**/typings/**\"",
+    "plugin.link": "npm link && cd ../demo && npm link nativescript-calendar && cd ../src",
+    "plugin.tscwatch": "npm run tsc -- -w",
+    "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+    "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+    "demo.reset": "cd ../demo && rimraf platforms",
+    "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-calendar && tns plugin add ../src",
+    "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
+    "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**' --exclude '**/typings/**'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eddyverbruggen/nativescript-calendar.git"
+  },
+  "keywords": [
+    "ecosystem:nativescript",
+    "NativeScript",
+    "iOS",
+    "Android",
+    "Calendar",
+    "Events",
+    "Event",
+    "Agenda"
+  ],
+  "author": {
+    "name": "Eddy Verbruggen",
+    "email": "eddyverbruggen@gmail.com",
+    "url": "https://github.com/eddyverbruggen"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eddyverbruggen/nativescript-calendar/issues"
+  },
+  "devDependencies": {
+    "rimraf": "^2.5.0",
+    "nativescript-dev-typescript": "libs",
+    "tns-core-modules": "~3.4.0",
+    "tns-platform-declarations": "~3.4.0",
+    "tslint": "~5.4.3",
+    "typescript": "~2.4.0"
+  },
+  "homepage": "https://github.com/eddyverbruggen/nativescript-calendar"
+}

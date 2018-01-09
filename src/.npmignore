@@ -1,0 +1,8 @@
+*.ts
+*.map
+!calendar.android.d.ts
+!calendar.ios.d.ts
+!calendar-common.d.ts
+!index.d.ts
+tsconfig.json
+typings/
