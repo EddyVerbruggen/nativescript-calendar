@@ -6,6 +6,7 @@
 **Implemented enhancements:**
 
 - Align with NativeScript seed (inline demo app, convert to TypeScript, etc) [\#34](https://github.com/EddyVerbruggen/nativescript-calendar/issues/34)
+- Add displayname to android calendars [\#29](https://github.com/EddyVerbruggen/nativescript-calendar/pull/29)
 
 
 ## [1.2.3](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.2.3) (2018-01-09)
