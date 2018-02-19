@@ -15,7 +15,7 @@
 
 The Calendar plugin allows you to manipulate events in the user's native Calendar. You can find, create and delete events in either the default or a custom calendar.
 
-If you're looking for an awesome in-app UI for the native calendar, then [check this out](http://docs.telerik.com/devtools/nativescript-ui/Controls/Calendar/calendar-overview).
+If you're looking for an awesome in-app UI for the native calendar, then [check this out](http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/Calendar/overview).
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
