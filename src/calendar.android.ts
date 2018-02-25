@@ -141,7 +141,7 @@ Calendar._findCalendars = filterByName => {
       const calendar_display_name = cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME));
       if (!filterByName || name === filterByName) {
         calendars.push({
-          id: cursor.getStrings(0),
+          id: cursor.getString(0),
           name: name,
           displayName: calendar_display_name
         });
