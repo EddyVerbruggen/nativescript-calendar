@@ -20,9 +20,16 @@
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules"
+    ],
+    "types": [
+    ]
   },
   "exclude": [
+    "demo",
     "node_modules"
   ],
   "compileOnSave": false
