@@ -141,7 +141,7 @@ Calendar._findCalendars = filterByName => {
       const calendar_display_name = cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME));
       if (!filterByName || name === filterByName) {
         calendars.push({
-          id: cursor.getLong(0),
+          id: cursor.getStrings(0),
           name: name,
           displayName: calendar_display_name
         });
@@ -207,7 +207,7 @@ Calendar._findEvents = function (arg) {
   if (cursor.moveToFirst()) {
     do {
       const event = {
-        id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
+        id: cursor.getString(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
         location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
@@ -215,7 +215,7 @@ Calendar._findEvents = function (arg) {
         endDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
         allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) === 1,
         calendar: {
-          id: cursor.getLong(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
+          id: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
           name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
         },
         recurringRule: cursor.getString(cursor.getColumnIndex(Calendar._fields.RRULE)),
