@@ -191,7 +191,6 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
     calendar: {
       id: ekCalendar.calendarIdentifier,
       name: ekCalendar.title,
-      color: ekCalendar.color,
       type: calendarTypes[ekCalendar.type]
     }
   };
