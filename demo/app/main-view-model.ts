@@ -4,6 +4,9 @@ import { alert } from "tns-core-modules/ui/dialogs/dialogs";
 import * as Calendar from "nativescript-calendar";
 
 export class DemoAppModel extends Observable {
+
+  private static CUSTOM_CALENDAR_NAME = "NativeScriptCal";
+
   doCheckHasPermission(): void {
     Calendar.hasPermission().then(
         granted => {
@@ -91,7 +94,7 @@ export class DemoAppModel extends Observable {
       url: 'http://my.shoppinglist.com',
       calendar: {
         // if it doesn't exist we create it
-        name: "NativeScript Cal"
+        name: DemoAppModel.CUSTOM_CALENDAR_NAME
       },
       // spans 2 hours, starting in 3 hours
       startDate: new Date(new Date().getTime() + (3 * 60 * 60 * 1000)),
@@ -155,12 +158,27 @@ export class DemoAppModel extends Observable {
     );
   }
 
+  doDeleteCalendar(): void {
+    Calendar.deleteCalendar({
+      name: DemoAppModel.CUSTOM_CALENDAR_NAME
+    }).then(
+        deletedCalendarId => {
+          alert({
+            title: "Deleted Calendar",
+            message: "ID's of the Calendar: \n\n" + deletedCalendarId,
+            okButtonText: "Awesomesauce!"
+          });
+        },
+        error => console.log("doDeleteCalendar error: " + error)
+    );
+  }
+
   doDeleteEvents(): void {
     Calendar.deleteEvents({
       // id: 'EF33E6DE-D36E-473B-A50B-FEFAEF700031',
-      title: 'groceries',
-      startDate: new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000)),
-      endDate: new Date(new Date().getTime() + (3 * 24 * 60 * 60 * 1000))
+      title: 'groceries', // only when the title contains this
+      startDate: new Date(new Date().getTime() - (24 * 60 * 60 * 1000)), // 1 day ago
+      endDate: new Date(new Date().getTime() + (11 * 24 * 60 * 60 * 1000)) // 11 days in the future
     }).then(
         deletedEventIds => {
           alert({
@@ -169,7 +187,7 @@ export class DemoAppModel extends Observable {
             okButtonText: "Awesome"
           });
         },
-        error => console.log("doFindEvents error: " + error)
+        error => console.log("doDeleteEvents error: " + error)
     );
   }
 }

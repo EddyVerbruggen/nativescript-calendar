@@ -14,7 +14,7 @@
       </TabViewItem>
       <TabViewItem title="Demo">
         <TabViewItem.view>
-          <GridLayout columns="*,*" rows="auto, auto, auto, auto, auto, auto, auto, auto, auto" horizontalAlignment="center" class="tab-content">
+          <GridLayout columns="*,*" rows="auto, auto, auto, auto, auto, auto, auto, auto, auto, auto" horizontalAlignment="center" class="tab-content">
             <Label row="0" colSpan="2" text="You need permission before being able to access the Calendar. The plugin requests this when it's loaded, but you can always trigger these manually." class="subtitle" textWrap="true" />
 
             <Button row="1" col="0" text="has permission?" tap="{{ doCheckHasPermission }}" class="button" />
@@ -36,7 +36,9 @@
             <Label row="7" colSpan="2" text="Other features" class="subtitle" textWrap="true" />
 
             <Button row="8" col="0" text="list calendars" tap="{{ doListCalendars }}" class="button" />
-            <Button row="8" col="1" text="delete events" tap="{{ doDeleteEvents }}" class="button button-danger"/>
+            <Button row="8" col="1" text="delete calendar" tap="{{ doDeleteCalendar }}" class="button button-danger"/>
+
+            <Button row="9" col="0" text="delete events" tap="{{ doDeleteEvents }}" class="button button-danger"/>
           </GridLayout>
         </TabViewItem.view>
       </TabViewItem>
