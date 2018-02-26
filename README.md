@@ -83,7 +83,7 @@ If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen
 
   // You can make this Event recurring (this one repeats every other day for 10 days):
   options.recurrence = {
-    frequency: Calendar.RecurrenceFrequency.DAILY, // DAILY|WEEKLY|MONTHLY|YEARLY
+    frequency: "daily", // daily | weekly | monthly | yearly
     interval: 2, // once in every 2 days
     endDate: new Date(new Date().getTime() + (10*24*60*60*1000)) // 10 days
   };
@@ -91,7 +91,7 @@ If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen
   // Want to use a custom calendar for your app? Pass in the 'name'.
   // If the name doesn't yet exist the plugin will create it for you.
   options.calendar = {
-    name: "NativeScript Cal"
+    name: "NativeScript Cal",
     // the color, in this case red
     color: "#FF0000",
     // Can be used on Android to group the calendars. Examples: Your app name, or an emailaddress
@@ -159,7 +159,7 @@ endDate
 allDay
 calendar {id, name}
 reminders {minutes}
-attendees {id, name, color, type} // iOS only
+attendees {name, url, status, role, type} // iOS only
 ```
 
 ### deleteEvents
@@ -216,3 +216,6 @@ Calendar.deleteCalendar({
   console.log(`Deleted Calendar with id ${id}`);
 });
 ```
+
+## Breaking changes in 2.0.0
+The `recurrence.frequency` property of `createEvent` changed to a string instead of a constant. Use one of `daily | weekly | monthly | yearly`.

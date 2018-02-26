@@ -1,11 +1,7 @@
 declare module "nativescript-calendar" {
 
-  export enum RecurrenceFrequency {
-    DAILY,
-    WEEKLY,
-    MONTHLY,
-    YEARLY
-  }
+  export type RecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";
+  export type CalendarType = "Local" | "CalDAV" | "Exchange" | "Subscription" | "Birthday" | "Mail";
 
   /**
      * The options object passed into the createEvent function.
@@ -151,6 +147,7 @@ declare module "nativescript-calendar" {
       id: string;
       name: string;
       displayName?: string;
+      type?: CalendarType;
     }
 
     export interface Event {
@@ -162,9 +159,9 @@ declare module "nativescript-calendar" {
       startDate: Date;
       endDate: Date;
       allDay: boolean;
-      instanceBeginDate: Date;
-      instanceEndDate: Date;
-      recurringRule: string;
+      instanceBeginDate?: Date;
+      instanceEndDate?: Date;
+      recurringRule?: string;
       calendar: Calendar;
       reminders?: Array<Reminder>;
       /**

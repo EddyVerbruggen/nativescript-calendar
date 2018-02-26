@@ -40,9 +40,4 @@ export const Calendar: any = {
   }
 };
 
-export enum RecurrenceFrequency {
-  DAILY = <any>"daily",
-  WEEKLY = <any>"weekly",
-  MONTHLY = <any>"monthly",
-  YEARLY = <any>"yearly"
-}
+export type RecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";

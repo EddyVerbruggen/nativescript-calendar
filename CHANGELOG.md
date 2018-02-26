@@ -1,12 +1,16 @@
 # Change Log
 
-## [1.3.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.1) (2018-02-25)
-[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.3.0...1.3.1)
+## [2.0.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/2.0.0) (2018-02-26)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.3.0...2.0.0)
 
 **Implemented enhancements:**
 
 - Event/Calendar ID's must be of type 'string' [\#39](https://github.com/EddyVerbruggen/nativescript-calendar/issues/39)
 - Add 'reminders' to 'findEvents' [\#40](https://github.com/EddyVerbruggen/nativescript-calendar/issues/40)
+
+**Fixed bugs:**
+
+- I could not get notes, rrule, begin, end values on ios! [\#31](https://github.com/EddyVerbruggen/nativescript-calendar/issues/31)
 
 
 ## [1.3.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.0) (2018-01-09)

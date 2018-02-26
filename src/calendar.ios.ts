@@ -1,16 +1,18 @@
 import { Color } from "tns-core-modules/color";
-import { Calendar } from "./calendar-common";
+import { Calendar, RecurrenceFrequency } from "./calendar-common";
+import { Calendar as ICalendar, Event } from "nativescript-calendar";
+const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
 
 Calendar._eventStore = null;
 
-Calendar._getRecurrenceFrequency = frequency => {
-  if (frequency === Calendar.RecurrenceFrequency.DAILY) {
+Calendar._getRecurrenceFrequency = (frequency: RecurrenceFrequency) => {
+  if (frequency === "daily") {
     return EKRecurrenceFrequency.Daily;
-  } else if (frequency === Calendar.RecurrenceFrequency.WEEKLY) {
+  } else if (frequency === "weekly") {
     return EKRecurrenceFrequency.Weekly;
-  } else if (frequency === Calendar.RecurrenceFrequency.MONTHLY) {
+  } else if (frequency === "monthly") {
     return EKRecurrenceFrequency.Monthly;
-  } else if (frequency === Calendar.RecurrenceFrequency.YEARLY) {
+  } else if (frequency === "yearly") {
     return EKRecurrenceFrequency.Yearly;
   } else {
     return null;
@@ -129,10 +131,11 @@ Calendar.listCalendars = function (arg) {
         const ekCalendars: Array<EKCalendar> = Calendar._findCalendars();
         for (let c in ekCalendars) {
           const ekCalendar = ekCalendars[c];
-          result.push({
+          result.push(<ICalendar>{
             id: ekCalendar.calendarIdentifier,
             name: ekCalendar.title,
-            displayName: ekCalendar.title
+            displayName: ekCalendar.title,
+            type: calendarTypes[ekCalendar.type]
           });
         }
         resolve(result);
@@ -146,8 +149,7 @@ Calendar.listCalendars = function (arg) {
   });
 };
 
-Calendar._ekEventToJSEvent = function (ekEvent) {
-  const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
+Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
   const attendeeTypes = ["Unknown", "Person", "Room", "Resource", "Group"];
   const attendeeRoles = ["Unknown", "Required", "Optional", "Chair", "Non Participant"];
   const attendeeStatuses = ["Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"];
@@ -188,9 +190,10 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
     allDay: ekEvent.allDay,
     attendees: attendees,
     reminders: reminders,
-    calendar: {
+    calendar: <ICalendar>{
       id: ekCalendar.calendarIdentifier,
       name: ekCalendar.title,
+      displayName: ekCalendar.title,
       type: calendarTypes[ekCalendar.type]
     }
   };
