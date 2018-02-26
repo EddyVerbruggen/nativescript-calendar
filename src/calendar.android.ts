@@ -329,12 +329,14 @@ Calendar.deleteEvents = function (arg) {
         const events = Calendar._findEvents(arg);
         const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
         const deletedEventIds = [];
-        for (let e in events) {
+        for (const e in events) {
           const event = events[e];
-          const uri = android.provider.CalendarContract.Events.CONTENT_URI;
-          const eventUri = android.content.ContentUris.withAppendedId(uri, event.id);
-          ContentResolver.delete(eventUri, null, null);
-          deletedEventIds.push(event.id);
+          try {
+            ContentResolver.delete(android.provider.CalendarContract.Events.CONTENT_URI, "_id = ?", [event.id]);
+            deletedEventIds.push(event.id);
+          } catch (e) {
+            console.log("Failed to delete event " + event.id + ": " + event.title + ", error: " + e);
+          }
         }
         resolve(deletedEventIds);
       };
@@ -397,12 +399,13 @@ Calendar.createEvent = function (arg) {
             // create it
             let calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
             const calendarContentValues = new android.content.ContentValues();
-            const accountName = settings.calendar.accountName || settings.calendar.name;
+            const accountName = settings.calendar.accountName || settings.calendar.name || "AccountName";
             calendarContentValues.put("account_name", accountName);
             calendarContentValues.put("account_type", "LOCAL");
             calendarContentValues.put("name", settings.calendar.name);
             calendarContentValues.put("calendar_displayName", settings.calendar.name);
             calendarContentValues.put("calendar_access_level", new java.lang.Integer(700)); // "owner"
+            calendarContentValues.put("ownerAccount", accountName);
             if (settings.calendar.color && Color.isValid(settings.calendar.color)) {
               let androidColor = new Color(settings.calendar.color).android;
               calendarContentValues.put("calendar_color", new java.lang.Integer(androidColor));
@@ -496,11 +499,14 @@ Calendar.deleteCalendar = function (arg) {
           const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
 
           // syntactically this is a loop but there's most likely only 1 item
-          for (let c in calendars) {
+          for (const c in calendars) {
             const calendar = calendars[c];
-            const deleteUri = android.content.ContentUris.withAppendedId(calUri, calendar.id);
-            ContentResolver.delete(deleteUri, null, null);
-            deletedCalId = calendar.id;
+            try {
+              ContentResolver.delete(calUri, "_id = ?", ["" + calendar.id]);
+              deletedCalId = calendar.id;
+            } catch (e) {
+              reject(e);
+            }
           }
         }
 
