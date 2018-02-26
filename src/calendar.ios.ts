@@ -184,7 +184,7 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
     endDate: ekEvent.endDate,
     location: ekEvent.location,
     notes: ekEvent.message,
-    url: ekEvent.URL,
+    url: ekEvent.URL ? ekEvent.URL.absoluteString : null,
     allDay: ekEvent.allDay,
     attendees: attendees,
     reminders: reminders,

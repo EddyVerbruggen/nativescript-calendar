@@ -74,7 +74,7 @@ export class DemoAppModel extends Observable {
       url: 'http://my.shoppinglist.com',
       // repeat every other day for 10 days
       recurrence: {
-        frequency: Calendar.RecurrenceFrequency.DAILY,
+        frequency: "daily",
         interval: 2,
         endDate: new Date(new Date().getTime() + (10 * 24 * 60 * 60 * 1000)) // 10 days
       },
