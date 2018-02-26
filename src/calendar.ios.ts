@@ -153,6 +153,7 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
   const attendeeStatuses = ["Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"];
 
   const ekCalendar = ekEvent.calendar;
+
   const attendees = [];
   if (ekEvent.attendees !== null) {
     for (let k = 0, l = ekEvent.attendees.count; k < l; k++) {
@@ -166,6 +167,16 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
       });
     }
   }
+
+  const reminders = [];
+  if (ekEvent.alarms !== null) {
+    for (let k = 0, l = ekEvent.alarms.count; k < l; k++) {
+      const ekAlarm = ekEvent.alarms.objectAtIndex(k);
+      reminders.push({
+        minutes: -(ekAlarm.relativeOffset / 60) // it's in seconds but we specify in minutes, so let's convert
+      });
+    }
+  }
   return {
     id: ekEvent.calendarItemIdentifier,
     title: ekEvent.title,
@@ -176,6 +187,7 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
     url: ekEvent.URL,
     allDay: ekEvent.allDay,
     attendees: attendees,
+    reminders: reminders,
     calendar: {
       id: ekCalendar.calendarIdentifier,
       name: ekCalendar.title,

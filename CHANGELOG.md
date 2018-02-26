@@ -1,5 +1,14 @@
 # Change Log
 
+## [1.3.1](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.1) (2018-02-25)
+[Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.3.0...1.3.1)
+
+**Implemented enhancements:**
+
+- Event/Calendar ID's must be of type 'string' [\#39](https://github.com/EddyVerbruggen/nativescript-calendar/issues/39)
+- Add 'reminders' to 'findEvents' [\#40](https://github.com/EddyVerbruggen/nativescript-calendar/issues/40)
+
+
 ## [1.3.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.0) (2018-01-09)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.2.3...1.3.0)
 

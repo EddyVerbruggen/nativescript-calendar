@@ -125,6 +125,7 @@ export class DemoAppModel extends Observable {
       endDate: new Date(new Date().getTime() + (50 * 24 * 60 * 60 * 1000))
     }).then(
         events => {
+          events.forEach(event => console.log(JSON.stringify(event)));
           alert({
             title: events.length > 1 ? "Showing last event of " + events.length + " in total" : "findEvents result",
             message: JSON.stringify(events.length > 1 ? events[events.length - 1] : events),

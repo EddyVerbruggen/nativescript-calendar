@@ -150,7 +150,7 @@ declare module "nativescript-calendar" {
     export interface Calendar {
       id: string;
       name: string;
-      displayName: string;
+      displayName?: string;
     }
 
     export interface Event {
@@ -158,33 +158,40 @@ declare module "nativescript-calendar" {
       title: string;
       location: string;
       notes: string;
-      url: string;
+      url?: string;
       startDate: Date;
       endDate: Date;
       allDay: boolean;
-      calendar: Calendar;
       instanceBeginDate: Date;
       instanceEndDate: Date;
       recurringRule: string;
+      calendar: Calendar;
+      reminders?: Array<Reminder>;
       /**
        * iOS only.
        */
-      attendees: {
-        name: string;
-        url?: string;
-        /**
-         * One of: "Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"
-         */
-        status: string;
-        /**
-         * One of: "Unknown", "Required", "Optional", "Chair", "Non Participant"
-         */
-        role: string;
-        /**
-         * One of: "Unknown", "Person", "Room", "Resource", "Group"
-         */
-        type: string;
-      };
+      attendees?: Array<Attendee>;
+    }
+
+    export interface Attendee {
+      name: string;
+      url?: string;
+      /**
+       * One of: "Unknown", "Pending", "Accepted", "Declined", "Tentative", "Delegated", "Completed", "In Process"
+       */
+      status: string;
+      /**
+       * One of: "Unknown", "Required", "Optional", "Chair", "Non Participant"
+       */
+      role: string;
+      /**
+       * One of: "Unknown", "Person", "Room", "Resource", "Group"
+       */
+      type: string;
+    }
+
+    export interface Reminder {
+      minutes: number;
     }
 
     /**

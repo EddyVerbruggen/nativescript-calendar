@@ -3,6 +3,7 @@ import * as utils from "tns-core-modules/utils/utils";
 import { Color } from "tns-core-modules/color";
 import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
 import { Calendar } from "./calendar-common";
+import { Event } from "nativescript-calendar";
 
 const PERMISSION_REQUEST_CODE = 2222;
 
@@ -25,6 +26,13 @@ Calendar._fields = {
   TIMEZONE: "eventTimezone",
   HAS_ALARM: "hasAlarm",
   RRULE: "rrule"
+};
+
+Calendar._remindersFields = {
+  ID: android.provider.CalendarContract.Reminders._ID,
+  EVENT_ID: android.provider.CalendarContract.Reminders.EVENT_ID,
+  MINUTES: "minutes",
+  METHOD: "method"
 };
 
 (function () {
@@ -88,7 +96,7 @@ Calendar._requestWritePermission = function (onPermissionGranted, reject) {
 };
 
 Calendar.hasPermission = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       resolve(Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR]));
     } catch (ex) {
@@ -99,7 +107,7 @@ Calendar.hasPermission = function (arg) {
 };
 
 Calendar.requestPermission = function () {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       Calendar._requestPermission(
           [android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR],
@@ -206,7 +214,7 @@ Calendar._findEvents = function (arg) {
   const events = [];
   if (cursor.moveToFirst()) {
     do {
-      const event = {
+      const event: Event = {
         id: cursor.getString(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
@@ -222,14 +230,50 @@ Calendar._findEvents = function (arg) {
         instanceBeginDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.BEGIN))),
         instanceEndDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.END)))
       };
+
+      event.reminders = Calendar._findReminders(event.id);
+
       events.push(event);
     } while (cursor.moveToNext());
   }
   return events;
 };
 
+Calendar._findReminders = function (eventId) {
+  const projection = [
+    // Calendar._remindersFields.ID,
+    // Calendar._remindersFields.EVENT_ID,
+    Calendar._remindersFields.MINUTES
+    // Calendar._remindersFields.METHOD
+  ];
+
+  let selection = "";
+  const selectionArgs = [];
+  selection += Calendar._remindersFields.EVENT_ID + " = ?";
+  selectionArgs.push(eventId);
+
+  const uriBuilder = android.provider.CalendarContract.Reminders.CONTENT_URI.buildUpon();
+  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const uri = uriBuilder.build();
+
+  const cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
+
+  const reminders = [];
+  if (cursor.moveToFirst()) {
+    do {
+      const reminder = {
+        // _id: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.ID)),
+        minutes: cursor.getLong(cursor.getColumnIndex(Calendar._remindersFields.MINUTES))
+        // method: cursor.getString(cursor.getColumnIndex(Calendar._remindersFields.METHOD))
+      };
+      reminders.push(reminder);
+    } while (cursor.moveToNext());
+  }
+  return reminders;
+};
+
 Calendar.listCalendars = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       const onPermissionGranted = function () {
         resolve(Calendar._findCalendars());
@@ -249,7 +293,7 @@ Calendar.listCalendars = function (arg) {
 };
 
 Calendar.findEvents = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       if (!arg.startDate || !arg.endDate) {
         reject("startDate and endDate are mandatory");
@@ -274,7 +318,7 @@ Calendar.findEvents = function (arg) {
 };
 
 Calendar.deleteEvents = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       if (!arg.startDate || !arg.endDate) {
         reject("startDate and endDate are mandatory");
@@ -311,7 +355,7 @@ Calendar.deleteEvents = function (arg) {
 };
 
 Calendar.createEvent = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       const settings = Calendar.merge(arg, Calendar.defaults);
       if (!settings.startDate || !settings.endDate) {
@@ -436,7 +480,7 @@ Calendar.createEvent = function (arg) {
 };
 
 Calendar.deleteCalendar = function (arg) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       if (!arg.name) {
         reject("name is mandatory");

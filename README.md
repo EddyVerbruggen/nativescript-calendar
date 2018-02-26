@@ -43,7 +43,7 @@ _To not crash your app in case you forgot to provide the reason this plugin adds
 Of course you can use this plugin with TypeScript, just import the plugin and use
 the functions summed up below like this:
 
-```js
+```typescript
 import * as Calendar from "nativescript-calendar";
 
 // example for listCalendars:
@@ -158,7 +158,8 @@ startDate
 endDate
 allDay
 calendar {id, name}
-attendees // iOS only
+reminders {minutes}
+attendees {id, name, color, type} // iOS only
 ```
 
 ### deleteEvents
@@ -168,7 +169,7 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
   var options = {
     // when searching, dates are mandatory - the event must be within this interval
     startDate: new Date(new Date().getTime() - (50*24*60*60*1000)),
-    endDate: new Date(new Date().getTime() + (50*24*60*60*1000));
+    endDate: new Date(new Date().getTime() + (50*24*60*60*1000))
   };
 
   // if you know the Event ID, set it here:
@@ -205,11 +206,13 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
 ### deleteCalendar
 
 ##### TypeScript
-```js
-  Calendar.deleteCalendar({
-    name: "My Calendar name"
-  }).then((id) => {
-    // id may be null if none was deleted
-    console.log("Deleted Calendar with id " + id);
-  });
+```typescript
+import * as Calendar from "nativescript-calendar";
+
+Calendar.deleteCalendar({
+  name: "My Calendar name"
+}).then(id => {
+  // id is null if nothing was deleted
+  console.log(`Deleted Calendar with id ${id}`);
+});
 ```
