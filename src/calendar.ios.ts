@@ -177,13 +177,13 @@ Calendar._ekEventToJSEvent = function (ekEvent) {
       });
     }
   }
-  return {
+  return <Event>{
     id: ekEvent.calendarItemIdentifier,
     title: ekEvent.title,
     startDate: ekEvent.startDate,
     endDate: ekEvent.endDate,
     location: ekEvent.location,
-    notes: ekEvent.message,
+    notes: ekEvent.notes,
     url: ekEvent.URL ? ekEvent.URL.absoluteString : null,
     allDay: ekEvent.allDay,
     attendees: attendees,
