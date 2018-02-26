@@ -170,7 +170,7 @@ declare module "nativescript-calendar" {
       endDate: Date;
       allDay: boolean;
       calendar: Calendar;
-      recurrence?: Recurrence,
+      recurrence?: Recurrence;
       reminders?: Array<Reminder>;
       /**
        * iOS only.

@@ -3,8 +3,13 @@
 ## [2.0.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/2.0.0) (2018-02-26)
 [Full Changelog](https://github.com/EddyVerbruggen/nativescript-calendar/compare/1.3.0...2.0.0)
 
+**BREAKING CHANGES:**
+- The `recurrence.frequency` property of `createEvent` changed to a string instead of a constant. Use one of `daily | weekly | monthly | yearly`.
+- The `recurringRule` property of `findEvents` has been removed (it was never set for iOS anyway). Replaced by the new `recurrence` object, which is available on both iOS and Android.
+
 **Implemented enhancements:**
 
+- How to get recurrence value on findEvents method? [\#26](https://github.com/EddyVerbruggen/nativescript-calendar/issues/26)
 - Event/Calendar ID's must be of type 'string' [\#39](https://github.com/EddyVerbruggen/nativescript-calendar/issues/39)
 - Add 'reminders' to 'findEvents' [\#40](https://github.com/EddyVerbruggen/nativescript-calendar/issues/40)
 

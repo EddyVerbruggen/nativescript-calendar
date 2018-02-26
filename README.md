@@ -219,5 +219,4 @@ Calendar.deleteCalendar({
 ```
 
 ## Breaking changes in 2.0.0
-- The `recurrence.frequency` property of `createEvent` changed to a string instead of a constant. Use one of `daily | weekly | monthly | yearly`.
-- The `recurringRule` property of `findEvents` has been removed (it was never set for iOS anyway). Replaced by the new `recurrence` object, which is available on both iOS and Android.
+See [CHANGELOG.md](CHANGELOG.md).
