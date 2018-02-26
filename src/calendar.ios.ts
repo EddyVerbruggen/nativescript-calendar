@@ -248,7 +248,7 @@ Calendar.findEvents = function (arg) {
         }
 
         // first try to match by id
-        if (settings.id !== null) {
+        if (settings.id) {
           const eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
           if (eKCalendarItem !== null) {
             resolve([Calendar._ekEventToJSEvent(eKCalendarItem)]);
@@ -375,17 +375,14 @@ Calendar.deleteEvents = function (arg) {
 
       const onPermissionGranted = function () {
         let calendars;
-        console.log(">>> deleteEvents settings.calendar.name: " + settings.calendar.name);
         if (settings.calendar.name === null) {
           calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
-          console.log(">>> deleteEvents calendars " + calendars.count);
           if (calendars.count === 0) {
             reject("No default calendar found. Is access to the Calendar blocked for this app?");
             return;
           }
         } else {
-          const cals = Calendar._findCalendars(settings.calendar.name);
-          console.log(">>> deleteEvents cals " + cals.length);
+          const cals: Array<EKCalendar> = Calendar._findCalendars(settings.calendar.name);
           let calendar;
           if (cals.length > 0) {
             calendar = cals[0];
@@ -398,10 +395,7 @@ Calendar.deleteEvents = function (arg) {
           }
         }
 
-        console.log(">>> deleteEvents calendars2 " + JSON.stringify(calendars));
-        console.log(">>> deleteEvents settings.id " + settings.id);
-
-        if (settings.id !== null) {
+        if (settings.id) {
           const eKCalendarItem = Calendar._eventStore.calendarItemWithIdentifier(settings.id);
           if (eKCalendarItem !== null) {
             Calendar._eventStore.removeEventSpanError(eKCalendarItem, EKSpan.ThisEvent, null);
@@ -414,12 +408,10 @@ Calendar.deleteEvents = function (arg) {
 
         // if that's not set or resolved, try other properties
         const matchingEvents = Calendar._findEKEvents(settings, calendars);
-        console.log(">>> deleteEvents matchingEvents " + matchingEvents);
         const deletedEventIds = [];
         if (matchingEvents !== null) {
           for (let i = 0, j = matchingEvents.count; i < j; i++) {
             const ekEvent = matchingEvents.objectAtIndex(i);
-            console.log(">>> deleteEvents ekEvent " + ekEvent);
             deletedEventIds.push(ekEvent.calendarItemIdentifier);
             // NOTE: you can delete this event AND future events by passing span:EKSpanFutureEvents
             Calendar._eventStore.removeEventSpanError(ekEvent, EKSpan.ThisEvent, null);
@@ -445,13 +437,13 @@ Calendar.deleteCalendar = function (arg) {
       }
 
       const onPermissionGranted = function () {
-        const calendars = Calendar._findCalendars(arg.name);
+        const calendars: Array<EKCalendar> = Calendar._findCalendars(arg.name);
         let deletedCalId = null;
 
         if (calendars.length > 0) {
           // syntactically this is a loop but there's most likely only 1 item
           for (let c in calendars) {
-            const calendar = calendars[c];
+            const calendar: EKCalendar = calendars[c];
             Calendar._eventStore.removeCalendarCommitError(calendar, true, null);
             deletedCalId = calendar.calendarIdentifier;
           }
