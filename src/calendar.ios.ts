@@ -1,11 +1,13 @@
 import { Color } from "tns-core-modules/color";
 import { Calendar, RecurrenceFrequency } from "./calendar-common";
-import { Calendar as ICalendar, Event } from "nativescript-calendar";
+import { Calendar as ICalendar, Event, Recurrence } from "nativescript-calendar";
+
 const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
+const frequencies: Array<RecurrenceFrequency> = ["daily", "weekly", "monthly", "yearly"];
 
 Calendar._eventStore = null;
 
-Calendar._getRecurrenceFrequency = (frequency: RecurrenceFrequency) => {
+Calendar._getRecurrenceFrequency = (frequency: RecurrenceFrequency): EKRecurrenceFrequency => {
   if (frequency === "daily") {
     return EKRecurrenceFrequency.Daily;
   } else if (frequency === "weekly") {
@@ -159,7 +161,7 @@ Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
   const attendees = [];
   if (ekEvent.attendees !== null) {
     for (let k = 0, l = ekEvent.attendees.count; k < l; k++) {
-      const ekParticipant = ekEvent.attendees.objectAtIndex(k);
+      const ekParticipant: EKParticipant = ekEvent.attendees.objectAtIndex(k);
       attendees.push({
         name: ekParticipant.name,
         url: ekParticipant.URL,
@@ -173,12 +175,26 @@ Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
   const reminders = [];
   if (ekEvent.alarms !== null) {
     for (let k = 0, l = ekEvent.alarms.count; k < l; k++) {
-      const ekAlarm = ekEvent.alarms.objectAtIndex(k);
+      const ekAlarm: EKAlarm = ekEvent.alarms.objectAtIndex(k);
       reminders.push({
         minutes: -(ekAlarm.relativeOffset / 60) // it's in seconds but we specify in minutes, so let's convert
       });
     }
   }
+
+  let recurrence: Recurrence;
+  if (ekEvent.recurrenceRules !== null) {
+    // just grab the first rule as we return only one anyway
+    const ekRecurrenceRule: EKRecurrenceRule = ekEvent.recurrenceRules.objectAtIndex(0);
+
+    recurrence = {
+      frequency: frequencies[ekRecurrenceRule.frequency],
+      interval: ekRecurrenceRule.interval,
+      endDate: ekRecurrenceRule.recurrenceEnd ? ekRecurrenceRule.recurrenceEnd.endDate : null,
+      count: ekRecurrenceRule.recurrenceEnd ? ekRecurrenceRule.recurrenceEnd.occurrenceCount : undefined
+    };
+  }
+
   return <Event>{
     id: ekEvent.calendarItemIdentifier,
     title: ekEvent.title,
@@ -190,6 +206,7 @@ Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
     allDay: ekEvent.allDay,
     attendees: attendees,
     reminders: reminders,
+    recurrence: recurrence,
     calendar: <ICalendar>{
       id: ekCalendar.calendarIdentifier,
       name: ekCalendar.title,

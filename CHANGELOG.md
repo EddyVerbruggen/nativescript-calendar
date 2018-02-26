@@ -11,6 +11,7 @@
 **Fixed bugs:**
 
 - I could not get notes, rrule, begin, end values on ios! [\#31](https://github.com/EddyVerbruggen/nativescript-calendar/issues/31)
+- (Events in) custom calendars on Android can't be viewed nor removed [\#42](https://github.com/EddyVerbruggen/nativescript-calendar/issues/42)
 
 
 ## [1.3.0](https://github.com/EddyVerbruggen/nativescript-calendar/tree/1.3.0) (2018-01-09)

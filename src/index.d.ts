@@ -3,6 +3,16 @@ declare module "nativescript-calendar" {
   export type RecurrenceFrequency = "daily" | "weekly" | "monthly" | "yearly";
   export type CalendarType = "Local" | "CalDAV" | "Exchange" | "Subscription" | "Birthday" | "Mail";
 
+  interface Recurrence {
+    frequency: RecurrenceFrequency;
+    /**
+     * Default 1 (every <RecurrenceFrequency>).
+     */
+    interval: number;
+    endDate?: Date;
+    count?: number;
+  }
+
   /**
      * The options object passed into the createEvent function.
      */
@@ -85,19 +95,12 @@ declare module "nativescript-calendar" {
        * Use this if you want this event to repeat with a certain interval.
        * For instance, if you want an event to recur every other day for 10 days, use:
        * {
-       *   frequency: RecurrenceFrequency.DAILY,
+       *   frequency: "daily" | "weekly" | "monthly" | "yearly",
        *   interval: 2,
        *   endDate: new Date(new Date().getTime() + (10*24*60*60*1000))
        * }
        */
-      recurrence?: {
-        frequency: RecurrenceFrequency;
-        /**
-         * Default 1 (every <RecurrenceFrequency>).
-         */
-        interval?: number;
-        endDate?: Date;
-      };
+      recurrence?: Recurrence;
     }
 
     interface FindOrDeleteEventsOptions {
@@ -146,7 +149,14 @@ declare module "nativescript-calendar" {
     export interface Calendar {
       id: string;
       name: string;
+      /**
+       * iOS: same as 'name'
+       * Android: usually the same as 'name' as well
+       */
       displayName?: string;
+      /**
+       * iOS only
+       */
       type?: CalendarType;
     }
 
@@ -159,10 +169,8 @@ declare module "nativescript-calendar" {
       startDate: Date;
       endDate: Date;
       allDay: boolean;
-      instanceBeginDate?: Date;
-      instanceEndDate?: Date;
-      recurringRule?: string;
       calendar: Calendar;
+      recurrence?: Recurrence,
       reminders?: Array<Reminder>;
       /**
        * iOS only.

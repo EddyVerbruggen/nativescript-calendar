@@ -3,7 +3,7 @@ import * as utils from "tns-core-modules/utils/utils";
 import { Color } from "tns-core-modules/color";
 import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
 import { Calendar } from "./calendar-common";
-import { Event } from "nativescript-calendar";
+import { Event, Recurrence, RecurrenceFrequency } from "nativescript-calendar";
 
 const PERMISSION_REQUEST_CODE = 2222;
 
@@ -13,7 +13,8 @@ Calendar._fields = {
   EVENT_ID: android.provider.CalendarContract.Instances.EVENT_ID,
   CALENDAR: {
     ID: "calendar_id",
-    NAME: "calendar_displayName"
+    NAME: "calendar_displayName",
+    TYPE: "calendar_type"
   },
   TITLE: "title",
   MESSAGE: "description",
@@ -214,21 +215,52 @@ Calendar._findEvents = function (arg) {
   const events = [];
   if (cursor.moveToFirst()) {
     do {
+      let recurrence: Recurrence;
+      // rules look like: FREQ=DAILY;INTERVAL=2;UNTIL=20180308
+      const recurrenceRule: string = cursor.getString(cursor.getColumnIndex(Calendar._fields.RRULE));
+      if (recurrenceRule) {
+        let frequency;
+        let interval;
+        let count;
+        let endDate = null;
+        const rules: Array<string> = recurrenceRule.split(";");
+        rules.forEach(rule => {
+          const ruleType = rule.split("=")[0];
+          const ruleValue = rule.split("=")[1];
+          if (ruleType === "FREQ") {
+            frequency = <RecurrenceFrequency>ruleValue.toLowerCase();
+          } else if (ruleType === "INTERVAL") {
+            interval = +ruleValue;
+          } else if (ruleType === "UNTIL" && ruleValue.length === 8) {
+            // format is YYYYMMDD
+            endDate = new Date(+ruleValue.substring(0, 4), +ruleValue.substring(4, 6) - 1, +ruleValue.substring(6, 8));
+          } else if (ruleType === "COUNT") {
+            count = +ruleValue;
+          }
+        });
+
+        recurrence = {
+          frequency: frequency,
+          interval: interval,
+          endDate: endDate,
+          count: count
+        };
+      }
+
       const event: Event = {
         id: cursor.getString(cursor.getColumnIndex(Calendar._fields.EVENT_ID)),
         title: cursor.getString(cursor.getColumnIndex(Calendar._fields.TITLE)),
         notes: cursor.getString(cursor.getColumnIndex(Calendar._fields.MESSAGE)),
         location: cursor.getString(cursor.getColumnIndex(Calendar._fields.LOCATION)),
-        startDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.STARTDATE))),
-        endDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
+        startDate: recurrence ? new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.BEGIN))) : new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.STARTDATE))),
+        endDate: recurrence ? new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.END))) : new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.ENDDATE))),
         allDay: cursor.getInt(cursor.getColumnIndex(Calendar._fields.ALLDAY)) === 1,
         calendar: {
           id: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.ID)),
-          name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
+          name: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME)),
+          displayName: cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME))
         },
-        recurringRule: cursor.getString(cursor.getColumnIndex(Calendar._fields.RRULE)),
-        instanceBeginDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.BEGIN))),
-        instanceEndDate: new Date(cursor.getLong(cursor.getColumnIndex(Calendar._fields.END)))
+        recurrence: recurrence,
       };
 
       event.reminders = Calendar._findReminders(event.id);

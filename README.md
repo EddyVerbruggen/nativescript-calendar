@@ -84,7 +84,7 @@ If you want a quickstart, [clone our demo app](https://github.com/EddyVerbruggen
   // You can make this Event recurring (this one repeats every other day for 10 days):
   options.recurrence = {
     frequency: "daily", // daily | weekly | monthly | yearly
-    interval: 2, // once in every 2 days
+    interval: 2, // once every 2 days
     endDate: new Date(new Date().getTime() + (10*24*60*60*1000)) // 10 days
   };
 
@@ -159,6 +159,7 @@ endDate
 allDay
 calendar {id, name}
 reminders {minutes}
+recurrence {frequency, interval, endDate}
 attendees {name, url, status, role, type} // iOS only
 ```
 
@@ -176,7 +177,7 @@ Usage is largely the same as findEvents, only the result is a bit different ;)
   options.id = '123456';
 
   // you can optionally pass in a few other properties, any event containing these will be deleted:
-  options.title = 'groceries';
+  options.title = 'groceries'; // events _including_ this string will be included in the selection
   options.location = 'foo';
   options.notes = 'bar'; // iOS only
 
@@ -218,4 +219,5 @@ Calendar.deleteCalendar({
 ```
 
 ## Breaking changes in 2.0.0
-The `recurrence.frequency` property of `createEvent` changed to a string instead of a constant. Use one of `daily | weekly | monthly | yearly`.
+- The `recurrence.frequency` property of `createEvent` changed to a string instead of a constant. Use one of `daily | weekly | monthly | yearly`.
+- The `recurringRule` property of `findEvents` has been removed (it was never set for iOS anyway). Replaced by the new `recurrence` object, which is available on both iOS and Android.
