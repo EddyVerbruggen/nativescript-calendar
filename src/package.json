@@ -1,6 +1,6 @@
 {
   "name": "nativescript-calendar",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Interact with the native calendar. Add, Update, Read, you name it.",
   "main": "calendar",
   "typings": "calendar.d.ts",
@@ -54,8 +54,8 @@
   "devDependencies": {
     "nativescript-dev-typescript": "libs",
     "rimraf": "^2.5.0",
-    "tns-core-modules": "~3.4.0",
-    "tns-platform-declarations": "~3.4.0",
+    "tns-core-modules": "~4.2.0",
+    "tns-platform-declarations": "~4.2.0",
     "tslint": "~5.0.0",
     "typescript": "~2.6.0"
   },
