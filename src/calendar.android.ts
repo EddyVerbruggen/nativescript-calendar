@@ -61,8 +61,7 @@ Calendar._hasPermission = function (perms) {
     return true;
   }
 
-  for (let p in perms) {
-    const permission = perms[p];
+  for (const permission of perms) {
     if (android.content.pm.PackageManager.PERMISSION_GRANTED !== android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
       return false;
     }
