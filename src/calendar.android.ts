@@ -77,6 +77,10 @@ Calendar._hasWritePermission = function () {
   return Calendar._hasPermission([android.Manifest.permission.WRITE_CALENDAR]);
 };
 
+Calendar._hasReadWritePermission = function () {
+  return Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR]);
+};
+
 Calendar._requestPermission = function (permissions, onPermissionGranted, reject) {
   Calendar._onPermissionGranted = onPermissionGranted;
   Calendar._reject = reject;
@@ -93,6 +97,10 @@ Calendar._requestReadPermission = function (onPermissionGranted, reject) {
 
 Calendar._requestWritePermission = function (onPermissionGranted, reject) {
   Calendar._requestPermission([android.Manifest.permission.WRITE_CALENDAR], onPermissionGranted, reject);
+};
+
+Calendar._requestReadWritePermission = function (onPermissionGranted, reject) {
+  Calendar._requestPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR], onPermissionGranted, reject);
 };
 
 Calendar.hasPermission = function (arg) {
@@ -372,10 +380,8 @@ Calendar.deleteEvents = function (arg) {
         resolve(deletedEventIds);
       };
 
-      // note that read or write doesn't really matter as it resolves to one permission currently
-      // and if that changes write will probably suffice for reading as well
-      if (!Calendar._hasWritePermission()) {
-        Calendar._requestWritePermission(onPermissionGranted, reject);
+      if (!Calendar._hasReadWritePermission()) {
+        Calendar._requestReadWritePermission(onPermissionGranted, reject);
         return;
       }
 
@@ -498,10 +504,8 @@ Calendar.createEvent = function (arg) {
         resolve(createdEventID);
       };
 
-      // note that read or write doesn't really matter as it resolves to one permission currently
-      // and if that changes write will probably suffice for reading as well
-      if (!Calendar._hasWritePermission()) {
-        Calendar._requestWritePermission(onPermissionGranted, reject);
+      if (!Calendar._hasReadWritePermission()) {
+        Calendar._requestReadWritePermission(onPermissionGranted, reject);
         return;
       }
 
@@ -544,8 +548,8 @@ Calendar.deleteCalendar = function (arg) {
         resolve(deletedCalId);
       };
 
-      if (!Calendar._hasWritePermission()) {
-        Calendar._requestWritePermission(onPermissionGranted, reject);
+      if (!Calendar._hasReadWritePermission()) {
+        Calendar._requestReadWritePermission(onPermissionGranted, reject);
         return;
       }
 
