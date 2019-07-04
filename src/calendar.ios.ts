@@ -1,6 +1,6 @@
 import { Color } from "tns-core-modules/color";
 import { Calendar, RecurrenceFrequency } from "./calendar-common";
-import { Calendar as ICalendar, Event, Recurrence } from "nativescript-calendar";
+import { Calendar as ICalendar, Event, Recurrence } from "./";
 
 const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
 const frequencies: Array<RecurrenceFrequency> = ["daily", "weekly", "monthly", "yearly"];
@@ -43,7 +43,7 @@ Calendar._hasPermission = function () {
   return EKAuthorizationStatus.Authorized === EKEventStore.authorizationStatusForEntityType(EKEntityType.Event);
 };
 
-Calendar.hasPermission = function (arg) {
+export function hasPermission(arg) {
   return new Promise(function (resolve, reject) {
     try {
       resolve(Calendar._hasPermission());
@@ -52,9 +52,9 @@ Calendar.hasPermission = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.requestPermission = function (arg) {
+export function requestPermission(arg) {
   return new Promise(function (resolve, reject) {
     try {
       Calendar._invokeFunctionOnEventStore(resolve, reject);
@@ -63,7 +63,7 @@ Calendar.requestPermission = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
 Calendar._findCalendars = (filterByName: string): Array<EKCalendar> => {
   const calendars = Calendar._eventStore.calendarsForEntityType(EKEntityType.Event);
@@ -125,7 +125,7 @@ Calendar._findEKSource = function () {
   return null;
 };
 
-Calendar.listCalendars = function (arg) {
+export function listCalendars(arg) {
   return new Promise(function (resolve, reject) {
     try {
       const onPermissionGranted = function () {
@@ -149,7 +149,7 @@ Calendar.listCalendars = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
 Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
   const attendeeTypes = ["Unknown", "Person", "Room", "Resource", "Group"];
@@ -216,7 +216,7 @@ Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
   };
 };
 
-Calendar.findEvents = function (arg) {
+export function findEvents(arg) {
   return new Promise(function (resolve, reject) {
     try {
       const settings = Calendar.merge(arg, Calendar.defaults);
@@ -273,9 +273,9 @@ Calendar.findEvents = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.createEvent = function (arg) {
+export function createEvent(arg) {
   return new Promise(function (resolve, reject) {
     try {
       const settings = Calendar.merge(arg, Calendar.defaults);
@@ -362,9 +362,9 @@ Calendar.createEvent = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.deleteEvents = function (arg) {
+export function deleteEvents(arg) {
   return new Promise(function (resolve, reject) {
     try {
       const settings = Calendar.merge(arg, Calendar.defaults);
@@ -426,9 +426,9 @@ Calendar.deleteEvents = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.deleteCalendar = function (arg) {
+export function deleteCalendar(arg) {
   return new Promise(function (resolve, reject) {
     try {
       if (!arg.name) {
@@ -457,6 +457,4 @@ Calendar.deleteCalendar = function (arg) {
       reject(ex);
     }
   });
-};
-
-module.exports = Calendar;
+}

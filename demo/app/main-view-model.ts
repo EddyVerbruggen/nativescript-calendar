@@ -1,6 +1,16 @@
 import { Observable } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs/dialogs";
 
+// import the plugin like this:
+import {
+  createEvent,
+  requestPermission,
+  findEvents,
+  deleteCalendar,
+  listCalendars, deleteEvents
+} from "nativescript-calendar";
+
+// .. or alternatively like this:
 import * as Calendar from "nativescript-calendar";
 
 export class DemoAppModel extends Observable {
@@ -20,11 +30,11 @@ export class DemoAppModel extends Observable {
   }
 
   doRequestPermission(): void {
-    Calendar.requestPermission().then(() => console.log("Permission requested"));
+    requestPermission().then(() => console.log("Permission requested"));
   }
 
   private createEvent(options): void {
-    Calendar.createEvent(options).then(
+    createEvent(options).then(
         createdId => {
           alert({
             title: "Event created with ID",
@@ -103,7 +113,7 @@ export class DemoAppModel extends Observable {
   }
 
   doFindEventByTitle(): void {
-    Calendar.findEvents({
+    findEvents({
       // any event containing this string will be returned
       title: 'groceries',
       // dates are mandatory, the event must be within this interval
@@ -122,7 +132,7 @@ export class DemoAppModel extends Observable {
   }
 
   doFindAllEvents(): void {
-    Calendar.findEvents({
+    findEvents({
       // dates are mandatory, the event must be within this interval
       startDate: new Date(new Date().getTime() - (50 * 24 * 60 * 60 * 1000)),
       endDate: new Date(new Date().getTime() + (50 * 24 * 60 * 60 * 1000))
@@ -146,7 +156,7 @@ export class DemoAppModel extends Observable {
   }
 
   doListCalendars(): void {
-    Calendar.listCalendars().then(
+    listCalendars().then(
         calendars => {
           alert({
             title: "Found " + calendars.length + " calendars",
@@ -159,7 +169,7 @@ export class DemoAppModel extends Observable {
   }
 
   doDeleteCalendar(): void {
-    Calendar.deleteCalendar({
+    deleteCalendar({
       name: DemoAppModel.CUSTOM_CALENDAR_NAME
     }).then(
         deletedCalendarId => {
@@ -174,7 +184,7 @@ export class DemoAppModel extends Observable {
   }
 
   doDeleteEvents(): void {
-    Calendar.deleteEvents({
+    deleteEvents({
       // id: 'EF33E6DE-D36E-473B-A50B-FEFAEF700031',
       title: 'groceries', // only when the title contains this
       startDate: new Date(new Date().getTime() - (24 * 60 * 60 * 1000)), // 1 day ago

@@ -3,11 +3,18 @@ import * as utils from "tns-core-modules/utils/utils";
 import { Color } from "tns-core-modules/color";
 import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
 import { Calendar } from "./calendar-common";
-import { Event, Recurrence, RecurrenceFrequency } from "nativescript-calendar";
+import { Event, Recurrence, RecurrenceFrequency } from "./";
 
 const PERMISSION_REQUEST_CODE = 2222;
 
-declare const android: any;
+declare const android, global: any;
+
+const ActivityCompatPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
+const ContextCompatPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
+
+function useAndroidX () {
+  return global.androidx && global.androidx.appcompat;
+}
 
 Calendar._fields = {
   EVENT_ID: android.provider.CalendarContract.Instances.EVENT_ID,
@@ -62,7 +69,7 @@ Calendar._hasPermission = function (perms) {
   }
 
   for (const permission of perms) {
-    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== android.support.v4.content.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
+    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== ContextCompatPackageName.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
       return false;
     }
   }
@@ -84,7 +91,7 @@ Calendar._hasReadWritePermission = function () {
 Calendar._requestPermission = function (permissions, onPermissionGranted, reject) {
   Calendar._onPermissionGranted = onPermissionGranted;
   Calendar._reject = reject;
-  android.support.v4.app.ActivityCompat.requestPermissions(
+  ActivityCompatPackageName.ActivityCompat.requestPermissions(
       application.android.foregroundActivity,
       permissions,
       PERMISSION_REQUEST_CODE
@@ -103,7 +110,7 @@ Calendar._requestReadWritePermission = function (onPermissionGranted, reject) {
   Calendar._requestPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR], onPermissionGranted, reject);
 };
 
-Calendar.hasPermission = function (arg) {
+export function hasPermission(arg) {
   return new Promise((resolve, reject) => {
     try {
       resolve(Calendar._hasPermission([android.Manifest.permission.READ_CALENDAR, android.Manifest.permission.WRITE_CALENDAR]));
@@ -112,9 +119,9 @@ Calendar.hasPermission = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.requestPermission = function () {
+export function requestPermission() {
   return new Promise((resolve, reject) => {
     try {
       Calendar._requestPermission(
@@ -127,7 +134,7 @@ Calendar.requestPermission = function () {
       reject(ex);
     }
   });
-};
+}
 
 Calendar._findCalendars = filterByName => {
   const projection = [
@@ -311,7 +318,7 @@ Calendar._findReminders = function (eventId) {
   return reminders;
 };
 
-Calendar.listCalendars = function (arg) {
+export function listCalendars(arg) {
   return new Promise((resolve, reject) => {
     try {
       const onPermissionGranted = function () {
@@ -329,9 +336,9 @@ Calendar.listCalendars = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.findEvents = function (arg) {
+export function findEvents(arg) {
   return new Promise((resolve, reject) => {
     try {
       if (!arg.startDate || !arg.endDate) {
@@ -354,9 +361,9 @@ Calendar.findEvents = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.deleteEvents = function (arg) {
+export function deleteEvents(arg) {
   return new Promise((resolve, reject) => {
     try {
       if (!arg.startDate || !arg.endDate) {
@@ -391,9 +398,9 @@ Calendar.deleteEvents = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.createEvent = function (arg) {
+export function createEvent(arg) {
   return new Promise((resolve, reject) => {
     try {
       const settings = Calendar.merge(arg, Calendar.defaults);
@@ -515,9 +522,9 @@ Calendar.createEvent = function (arg) {
       reject(ex);
     }
   });
-};
+}
 
-Calendar.deleteCalendar = function (arg) {
+export function deleteCalendar(arg) {
   return new Promise((resolve, reject) => {
     try {
       if (!arg.name) {
@@ -559,6 +566,4 @@ Calendar.deleteCalendar = function (arg) {
       reject(ex);
     }
   });
-};
-
-module.exports = Calendar;
+}

@@ -1,6 +1,6 @@
 {
   "name": "nativescript-calendar",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Interact with the native calendar. Add, Update, Read, you name it.",
   "main": "calendar",
   "typings": "calendar.d.ts",
@@ -11,15 +11,14 @@
     }
   },
   "scripts": {
-    "build": "npm i && tsc",
-    "demo.ios": "npm run preparedemo && cd ../demo && tns run ios --emulator",
-    "demo.ios.device": "npm run preparedemo && cd ../demo && tns platform remove ios && tns run ios",
-    "demo.android": "npm run preparedemo && cd ../demo && tns platform remove android && tns run android --justlaunch",
+    "build": "npm i && tsc --skipLibCheck",
+    "demo.ios": "npm run build && cd ../demo && tns run ios --emulator",
+    "demo.ios.device": "npm run build && cd ../demo && tns run ios",
+    "demo.android": "npm run build && cd ../demo && tns run android",
     "test": "npm run tslint && npm run tslint.demo && cd ../demo && tns build ios && tns build android",
     "test.ios": "cd ../demo && tns platform remove ios && tns test ios --emulator",
     "test.ios.device": "cd ../demo && tns platform remove ios && tns test ios",
     "test.android": "cd ../demo && tns platform remove android && tns test android --justlaunch",
-    "preparedemo": "npm run build && cd ../demo && tns plugin remove nativescript-calendar && tns plugin add ../src && tns install",
     "setup": "npm run build && cd ../demo && npm i",
     "setupandinstall": "npm i && cd ../demo && npm i && cd ../src && npm run build && cd ../demo && tns plugin add ../src && cd ../src",
     "tslint": "tslint --config '../tslint.json' '*.ts' --exclude '**/node_modules/**'",
@@ -52,12 +51,12 @@
     "url": "https://github.com/eddyverbruggen/nativescript-calendar/issues"
   },
   "devDependencies": {
-    "nativescript-dev-typescript": "libs",
+    "nativescript-dev-typescript": "rc",
     "rimraf": "^2.5.0",
-    "tns-core-modules": "~4.2.0",
-    "tns-platform-declarations": "~4.2.0",
-    "tslint": "~5.0.0",
-    "typescript": "~2.6.0"
+    "tns-core-modules": "rc",
+    "tns-platform-declarations": "rc",
+    "tslint": "~5.10.0",
+    "typescript": "~3.4.5"
   },
   "homepage": "https://github.com/eddyverbruggen/nativescript-calendar"
 }

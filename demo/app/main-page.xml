@@ -5,7 +5,6 @@
         <TabViewItem.view>
           <ScrollView>
             <StackLayout class="tab-content">
-              <Image margin="10" src="~/res/telerik-logo.png" />
               <Label text="Calendar plugin demo" class="title"/>
               <Label text="The Calendar plugin allows you to manipulate events in the user's calendar. You can find, create and delete events in either the default or a custom calendar." textWrap="true"/>
             </StackLayout>
