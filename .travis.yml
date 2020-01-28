@@ -1,11 +1,12 @@
 android:
   components:
     - tools
+    - emulator
     - platform-tools
-    - build-tools-26.0.1
-    - android-26
+    - build-tools-28.0.3
+    - android-28
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-21
+    - sys-img-armeabi-v7a-android-28
 
 before_cache:
     - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -16,6 +17,10 @@ cache:
         - $HOME/.gradle/caches/
         - $HOME/.gradle/wrapper/
 
+before_install:
+  - sudo pip install --upgrade pip
+  - sudo pip install six
+
 install:
     - echo no | npm install -g nativescript
     - tns usage-reporting disable
@@ -23,9 +28,6 @@ install:
     - npm install
     - cd src
     - npm run setup
-
-script:
-
 
 matrix:
   include:
@@ -42,6 +44,7 @@ matrix:
       language: node_js
       node_js: "10"
       jdk: oraclejdk8
+      before_script: pod repo update
       script: cd ../demo && tns build ios --bundle
     - language: android
       os: linux
@@ -52,7 +55,7 @@ matrix:
       script: cd ../demo && tns build android --bundle
     - stage: "Build"
       env:
-        - BuildAndroid="25"
+        - BuildAndroid="28"
       language: android
       os: linux
       jdk: oraclejdk8
