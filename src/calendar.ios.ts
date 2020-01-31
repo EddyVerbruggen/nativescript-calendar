@@ -164,6 +164,7 @@ Calendar._ekEventToJSEvent = (ekEvent: EKEvent) => {
       const ekParticipant: EKParticipant = ekEvent.attendees.objectAtIndex(k);
       attendees.push({
         name: ekParticipant.name,
+        email: ekParticipant.URL.resourceSpecifier,
         url: ekParticipant.URL,
         status: attendeeStatuses[ekParticipant.participantStatus],
         role: attendeeRoles[ekParticipant.participantRole],

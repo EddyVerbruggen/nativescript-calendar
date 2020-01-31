@@ -351,7 +351,8 @@ Calendar._findAttendees = function (eventId) {
 
       const attendee = {
         name: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_NAME)),
-        url: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_EMAIL)),
+        email: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_EMAIL)),
+        url: '',
         status: attendee_status,
         role: "Unknown",
         type: attendee_type
