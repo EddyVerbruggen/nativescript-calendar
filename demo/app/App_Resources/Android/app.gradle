@@ -10,7 +10,6 @@ android {
     generatedDensities = []
     applicationId = "org.nativescript.plugindemo.calendar"
     minSdkVersion 24
-    targetSdkVersion 25
   }
   aaptOptions {  
     additionalParameters "--no-version-vectors"  

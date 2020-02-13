@@ -160,7 +160,7 @@ allDay
 calendar {id, name}
 reminders {minutes}
 recurrence {frequency, interval, endDate}
-attendees {name, url, status, role, type} // iOS only
+attendees {name, email, url, status, role, type}
 ```
 
 ### deleteEvents

@@ -1,11 +1,12 @@
 android:
   components:
     - tools
+    - emulator
     - platform-tools
-    - build-tools-26.0.1
-    - android-26
+    - build-tools-28.0.3
+    - android-28
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-21
+    - sys-img-armeabi-v7a-android-28
 
 before_cache:
     - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -16,6 +17,10 @@ cache:
         - $HOME/.gradle/caches/
         - $HOME/.gradle/wrapper/
 
+before_install:
+  - sudo pip install --upgrade pip
+  - sudo pip install six
+
 install:
     - echo no | npm install -g nativescript
     - tns usage-reporting disable
@@ -24,48 +29,46 @@ install:
     - cd src
     - npm run setup
 
-script:
-
-
 matrix:
   include:
     - stage: "Lint"
       language: node_js
       os: linux
-      node_js: "6"
+      node_js: "10"
       script: "npm run ci.tslint"
     - stage: "WebPack"
       os: osx
       env:
         - Webpack="iOS"
-      osx_image: xcode9
+      osx_image: xcode10
       language: node_js
-      node_js: "6"
+      node_js: "10"
       jdk: oraclejdk8
+      before_script: pod repo update
       script: cd ../demo && tns build ios --bundle
     - language: android
       os: linux
       env:
         - Webpack="Android"
       jdk: oraclejdk8
-      before_install: nvm install 6.10.3
+      before_install: nvm install 10
       script: cd ../demo && tns build android --bundle
     - stage: "Build"
       env:
-        - BuildAndroid="25"
+        - BuildAndroid="28"
       language: android
       os: linux
       jdk: oraclejdk8
-      before_install: nvm install 6.10.3
+      before_install: nvm install 10
       script:
         - cd ../demo && tns build android
     - os: osx
       env:
-        - BuildiOS="11"
-        - Xcode="9"
-      osx_image: xcode9
+        - BuildiOS="12"
+        - Xcode="10"
+      osx_image: xcode10
       language: node_js
-      node_js: "6"
+      node_js: "10"
       jdk: oraclejdk8
       script:
         - cd ../demo && tns build ios

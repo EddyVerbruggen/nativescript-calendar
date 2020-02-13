@@ -43,6 +43,14 @@ Calendar._remindersFields = {
   METHOD: "method"
 };
 
+Calendar._attendeesFields = {
+  EVENT_ID: android.provider.CalendarContract.AttendeesColumns.EVENT_ID,
+  ATTENDEE_NAME: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_NAME,
+  ATTENDEE_EMAIL: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_EMAIL,
+  ATTENDEE_TYPE: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_TYPE,
+  ATTENDEE_STATUS: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_STATUS,
+};
+
 (function () {
   application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, (args: AndroidActivityRequestPermissionsEventData) => {
     if (args.requestCode !== PERMISSION_REQUEST_CODE) {
@@ -278,6 +286,7 @@ Calendar._findEvents = function (arg) {
       };
 
       event.reminders = Calendar._findReminders(event.id);
+      event.attendees = Calendar._findAttendees(event.id);
 
       events.push(event);
     } while (cursor.moveToNext());
@@ -316,6 +325,42 @@ Calendar._findReminders = function (eventId) {
     } while (cursor.moveToNext());
   }
   return reminders;
+};
+
+Calendar._findAttendees = function (eventId) {
+  const projection = [];
+  let selection = "";
+  let selectionArgs = [];
+  selection += Calendar._attendeesFields.EVENT_ID + " = ?";
+  selectionArgs.push(eventId);
+  const uriBuilder = android.provider.CalendarContract.Attendees.CONTENT_URI.buildUpon();
+  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const uri = uriBuilder.build();
+  let cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
+  let attendees = [];
+  if (cursor.moveToFirst()) {
+    do {
+      const attendeeTypes = ["Unknown", "Optional", "Required", "Room"];
+      const attendeeStatuses = ["Unknown", "Accepted", "Declined", "Invited", "Tentative"];
+
+      const attendee_type = cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_TYPE)) ?
+        attendeeTypes[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_TYPE))] : attendeeTypes[0];
+
+      const attendee_status = cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_STATUS)) ?
+        attendeeStatuses[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_STATUS))] : attendeeStatuses[0];
+
+      const attendee = {
+        name: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_NAME)),
+        email: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_EMAIL)),
+        url: '',
+        status: attendee_status,
+        role: "Unknown",
+        type: attendee_type
+      };
+      attendees.push(attendee);
+    } while (cursor.moveToNext());
+  }
+  return attendees;
 };
 
 export function listCalendars(arg) {
