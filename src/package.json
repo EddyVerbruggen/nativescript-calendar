@@ -1,6 +1,6 @@
 {
   "name": "nativescript-calendar",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Interact with the native calendar. Add, Update, Read, you name it.",
   "main": "calendar",
   "typings": "calendar.d.ts",
@@ -51,11 +51,10 @@
     "url": "https://github.com/eddyverbruggen/nativescript-calendar/issues"
   },
   "devDependencies": {
-    "nativescript-dev-typescript": "rc",
-    "rimraf": "^2.5.0",
-    "tns-core-modules": "rc",
-    "tns-platform-declarations": "rc",
-    "tslint": "~5.10.0",
+    "tns-core-modules": "~6.4.0",
+    "tns-platform-declarations": "~6.4.0",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.11.0",
     "typescript": "~3.4.5"
   },
   "homepage": "https://github.com/eddyverbruggen/nativescript-calendar"

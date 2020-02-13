@@ -1,9 +1,9 @@
 import * as application from "tns-core-modules/application";
-import * as utils from "tns-core-modules/utils/utils";
-import { Color } from "tns-core-modules/color";
 import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
-import { Calendar } from "./calendar-common";
+import { Color } from "tns-core-modules/color";
+import * as utils from "tns-core-modules/utils/utils";
 import { Event, Recurrence, RecurrenceFrequency } from "./";
+import { Calendar } from "./calendar-common";
 
 const PERMISSION_REQUEST_CODE = 2222;
 
@@ -12,7 +12,7 @@ declare const android, global: any;
 const ActivityCompatPackageName = useAndroidX() ? global.androidx.core.app : android.support.v4.app;
 const ContextCompatPackageName = useAndroidX() ? global.androidx.core.content : android.support.v4.content;
 
-function useAndroidX () {
+function useAndroidX() {
   return global.androidx && global.androidx.appcompat;
 }
 
@@ -48,7 +48,7 @@ Calendar._attendeesFields = {
   ATTENDEE_NAME: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_NAME,
   ATTENDEE_EMAIL: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_EMAIL,
   ATTENDEE_TYPE: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_TYPE,
-  ATTENDEE_STATUS: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_STATUS,
+  ATTENDEE_STATUS: android.provider.CalendarContract.AttendeesColumns.ATTENDEE_STATUS
 };
 
 (function () {
@@ -344,10 +344,10 @@ Calendar._findAttendees = function (eventId) {
       const attendeeStatuses = ["Unknown", "Accepted", "Declined", "Invited", "Tentative"];
 
       const attendee_type = cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_TYPE)) ?
-        attendeeTypes[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_TYPE))] : attendeeTypes[0];
+          attendeeTypes[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_TYPE))] : attendeeTypes[0];
 
       const attendee_status = cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_STATUS)) ?
-        attendeeStatuses[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_STATUS))] : attendeeStatuses[0];
+          attendeeStatuses[cursor.getShort(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_STATUS))] : attendeeStatuses[0];
 
       const attendee = {
         name: cursor.getString(cursor.getColumnIndex(Calendar._attendeesFields.ATTENDEE_NAME)),

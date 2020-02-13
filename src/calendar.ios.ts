@@ -1,6 +1,6 @@
 import { Color } from "tns-core-modules/color";
-import { Calendar, RecurrenceFrequency } from "./calendar-common";
 import { Calendar as ICalendar, Event, Recurrence } from "./";
+import { Calendar, RecurrenceFrequency } from "./calendar-common";
 
 const calendarTypes = ["Local", "CalDAV", "Exchange", "Subscription", "Birthday", "Mail"];
 const frequencies: Array<RecurrenceFrequency> = ["daily", "weekly", "monthly", "yearly"];
