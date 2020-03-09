@@ -170,10 +170,10 @@ Calendar._findCalendars = filterByName => {
     do {
       const name = cursor.getString(1);
       const calendar_display_name = cursor.getString(cursor.getColumnIndex(Calendar._fields.CALENDAR.NAME));
-      if (!filterByName || name === filterByName) {
+      if (!filterByName || filterByName === name || filterByName === calendar_display_name) {
         calendars.push({
           id: cursor.getString(0),
-          name: name,
+          name: name ? name : calendar_display_name,
           displayName: calendar_display_name
         });
       }
