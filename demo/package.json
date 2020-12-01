@@ -1,13 +1,4 @@
 {
-  "nativescript": {
-    "id": "org.nativescript.plugindemo.calendar",
-    "tns-ios": {
-      "version": "6.4.0"
-    },
-    "tns-android": {
-      "version": "6.4.1"
-    }
-  },
   "dependencies": {
     "nativescript-calendar": "file:../src",
     "@nativescript/core": "^7.0.0",
@@ -15,13 +6,15 @@
     "@nativescript/unit-test-runner": "1.0.0"
   },
   "devDependencies": {
+    "@nativescript/android": "7.0.1",
+    "@nativescript/types": "~7.0.0",
+    "@nativescript/webpack": "^3.0.0",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
+    "karma-webpack": "3.0.5",
     "lazy": "1.0.11",
-    "@nativescript/webpack": "^3.0.0",
-    "@nativescript/types": "~7.0.0",
-    "typescript": "3.4.5",
-    "karma-webpack": "3.0.5"
-  }
+    "typescript": "3.9.7"
+  },
+  "main": "app.js"
 }
