@@ -1,5 +1,4 @@
-import { Observable } from "tns-core-modules/data/observable";
-import { alert } from "tns-core-modules/ui/dialogs/dialogs";
+import { Observable, Dialogs } from "@nativescript/core";
 
 // import the plugin like this:
 import {
@@ -20,7 +19,7 @@ export class DemoAppModel extends Observable {
   doCheckHasPermission(): void {
     Calendar.hasPermission().then(
         granted => {
-          alert({
+          Dialogs.alert({
             title: "Permission granted?",
             message: granted ? "YES" : "NO",
             okButtonText: "OK"
@@ -36,7 +35,7 @@ export class DemoAppModel extends Observable {
   private createEvent(options): void {
     createEvent(options).then(
         createdId => {
-          alert({
+          Dialogs.alert({
             title: "Event created with ID",
             message: JSON.stringify(createdId),
             okButtonText: "OK, nice!"
@@ -121,7 +120,7 @@ export class DemoAppModel extends Observable {
       endDate: new Date(new Date().getTime() + (3 * 24 * 60 * 60 * 1000))
     }).then(
         events => {
-          alert({
+          Dialogs.alert({
             title: events.length + " events match the title 'groceries'",
             message: JSON.stringify(events),
             okButtonText: "OK, thanks"
@@ -139,14 +138,14 @@ export class DemoAppModel extends Observable {
     }).then(
         events => {
           events.forEach(event => console.log(JSON.stringify(event)));
-          alert({
+          Dialogs.alert({
             title: events.length > 1 ? "Showing last event of " + events.length + " in total" : "findEvents result",
             message: JSON.stringify(events.length > 1 ? events[events.length - 1] : events),
             okButtonText: "OK, thanks"
           });
         },
         error => {
-          alert({
+          Dialogs.alert({
             title: "Error in findEvents",
             message: JSON.stringify(error),
             okButtonText: "OK, thanks"
@@ -158,7 +157,7 @@ export class DemoAppModel extends Observable {
   doListCalendars(): void {
     listCalendars().then(
         calendars => {
-          alert({
+          Dialogs.alert({
             title: "Found " + calendars.length + " calendars",
             message: JSON.stringify(calendars),
             okButtonText: "OK, sweet"
@@ -173,7 +172,7 @@ export class DemoAppModel extends Observable {
       name: DemoAppModel.CUSTOM_CALENDAR_NAME
     }).then(
         deletedCalendarId => {
-          alert({
+          Dialogs.alert({
             title: "Deleted Calendar",
             message: "ID's of the Calendar: \n\n" + deletedCalendarId,
             okButtonText: "Awesomesauce!"
@@ -191,7 +190,7 @@ export class DemoAppModel extends Observable {
       endDate: new Date(new Date().getTime() + (11 * 24 * 60 * 60 * 1000)) // 11 days in the future
     }).then(
         deletedEventIds => {
-          alert({
+          Dialogs.alert({
             title: "Deleted " + deletedEventIds.length + " 'groceries' event(s)",
             message: "ID's of deleted event(s)\n\n" + JSON.stringify(deletedEventIds),
             okButtonText: "Awesome"

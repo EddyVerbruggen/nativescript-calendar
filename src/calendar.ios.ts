@@ -1,4 +1,4 @@
-import { Color } from "tns-core-modules/color";
+import { Color } from "@nativescript/core";
 import { Calendar as ICalendar, Event, Recurrence } from "./";
 import { Calendar, RecurrenceFrequency } from "./calendar-common";
 

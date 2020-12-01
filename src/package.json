@@ -51,8 +51,8 @@
     "url": "https://github.com/eddyverbruggen/nativescript-calendar/issues"
   },
   "devDependencies": {
-    "tns-core-modules": "~6.4.0",
-    "tns-platform-declarations": "~6.4.0",
+    "@nativescript/core": "~7.0.0",
+    "@nativescript/types": "~7.0.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.11.0",
     "typescript": "~3.4.5"
