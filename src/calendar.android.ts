@@ -1,7 +1,10 @@
-import * as application from "tns-core-modules/application";
-import { AndroidActivityRequestPermissionsEventData } from "tns-core-modules/application";
-import { Color } from "tns-core-modules/color";
-import * as utils from "tns-core-modules/utils/utils";
+import {
+  Application,
+  Color,
+  Utils,
+  AndroidApplication,
+  AndroidActivityRequestPermissionsEventData
+} from "@nativescript/core";
 import { Event, Recurrence, RecurrenceFrequency } from "./";
 import { Calendar } from "./calendar-common";
 
@@ -52,7 +55,7 @@ Calendar._attendeesFields = {
 };
 
 (function () {
-  application.android.on(application.AndroidApplication.activityRequestPermissionsEvent, (args: AndroidActivityRequestPermissionsEventData) => {
+  Application.android.on(AndroidApplication.activityRequestPermissionsEvent, (args: AndroidActivityRequestPermissionsEventData) => {
     if (args.requestCode !== PERMISSION_REQUEST_CODE) {
       return;
     }
@@ -77,7 +80,7 @@ Calendar._hasPermission = function (perms) {
   }
 
   for (const permission of perms) {
-    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== ContextCompatPackageName.ContextCompat.checkSelfPermission(utils.ad.getApplicationContext(), permission)) {
+    if (android.content.pm.PackageManager.PERMISSION_GRANTED !== ContextCompatPackageName.ContextCompat.checkSelfPermission(Utils.ad.getApplicationContext(), permission)) {
       return false;
     }
   }
@@ -100,7 +103,7 @@ Calendar._requestPermission = function (permissions, onPermissionGranted, reject
   Calendar._onPermissionGranted = onPermissionGranted;
   Calendar._reject = reject;
   ActivityCompatPackageName.ActivityCompat.requestPermissions(
-      application.android.foregroundActivity,
+      Application.android.foregroundActivity,
       permissions,
       PERMISSION_REQUEST_CODE
   );
@@ -155,7 +158,7 @@ Calendar._findCalendars = filterByName => {
   let selections = null;
   let selection = "visible=1";
 
-  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const contentResolver = Utils.ad.getApplicationContext().getContentResolver();
   const uriBuilder = android.provider.CalendarContract.Calendars.CONTENT_URI.buildUpon();
   const uri = uriBuilder.build();
   let cursor = contentResolver.query(
@@ -225,7 +228,7 @@ Calendar._findEvents = function (arg) {
   const uriBuilder = android.provider.CalendarContract.Instances.CONTENT_URI.buildUpon();
   android.content.ContentUris.appendId(uriBuilder, settings.startDate.getTime());
   android.content.ContentUris.appendId(uriBuilder, settings.endDate.getTime());
-  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const contentResolver = Utils.ad.getApplicationContext().getContentResolver();
   const uri = uriBuilder.build();
   const cursor = contentResolver.query(
       uri,
@@ -308,7 +311,7 @@ Calendar._findReminders = function (eventId) {
   selectionArgs.push(eventId);
 
   const uriBuilder = android.provider.CalendarContract.Reminders.CONTENT_URI.buildUpon();
-  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const contentResolver = Utils.ad.getApplicationContext().getContentResolver();
   const uri = uriBuilder.build();
 
   const cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
@@ -334,7 +337,7 @@ Calendar._findAttendees = function (eventId) {
   selection += Calendar._attendeesFields.EVENT_ID + " = ?";
   selectionArgs.push(eventId);
   const uriBuilder = android.provider.CalendarContract.Attendees.CONTENT_URI.buildUpon();
-  const contentResolver = utils.ad.getApplicationContext().getContentResolver();
+  const contentResolver = Utils.ad.getApplicationContext().getContentResolver();
   const uri = uriBuilder.build();
   let cursor = contentResolver.query(uri, projection, selection, selectionArgs, null);
   let attendees = [];
@@ -418,7 +421,7 @@ export function deleteEvents(arg) {
 
       const onPermissionGranted = function () {
         const events = Calendar._findEvents(arg);
-        const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+        const ContentResolver = Utils.ad.getApplicationContext().getContentResolver();
         const deletedEventIds = [];
         for (const e in events) {
           const event = events[e];
@@ -477,7 +480,7 @@ export function createEvent(arg) {
           }
         }
         ContentValues.put(Calendar._fields.MESSAGE, description);
-        const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+        const ContentResolver = Utils.ad.getApplicationContext().getContentResolver();
         ContentValues.put(Calendar._fields.HAS_ALARM, new java.lang.Integer(settings.reminders && (settings.reminders.first || settings.reminders.second) ? 1 : 0));
         let calendarId = null;
         if (settings.calendar.name !== null) {
@@ -583,7 +586,7 @@ export function deleteCalendar(arg) {
 
         if (calendars.length > 0) {
           const calUri = android.provider.CalendarContract.Calendars.CONTENT_URI;
-          const ContentResolver = utils.ad.getApplicationContext().getContentResolver();
+          const ContentResolver = Utils.ad.getApplicationContext().getContentResolver();
 
           // syntactically this is a loop but there's most likely only 1 item
           for (const c in calendars) {
