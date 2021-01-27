@@ -19,8 +19,17 @@ If you're looking for an awesome in-app UI for the native calendar, then [check 
 
 ## Installation
 From the command prompt go to your app's root folder and execute:
+
+#### NativeScript 7
+
 ```
 tns plugin add nativescript-calendar
+```
+
+#### NativeScript 6
+
+```
+tns plugin add nativescript-calendar@2.2.1
 ```
 
 ## iOS runtime permission reason
