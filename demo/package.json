@@ -9,7 +9,7 @@
     "@nativescript/android": "7.0.1",
     "@nativescript/ios": "7.0.6",
     "@nativescript/types": "~7.0.4",
-    "@nativescript/webpack": "^3.0.8",
+    "@nativescript/webpack": "^5.0.12",
     "babel-traverse": "6.26.0",
     "babel-types": "6.26.0",
     "babylon": "6.18.0",
